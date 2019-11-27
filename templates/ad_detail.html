@@ -11,13 +11,30 @@
 
 </head>
 <body>
-<div>
-    <img class="image" src='{{ advertisement.profile_image.url }}' alt="ad image"/>
+<div style="width: 400px; height: 40px">
+        <canvas id="myChart" width="10" height="10"></canvas>
+
+        <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
+        <script type="text/javascript" src="{% static 'js/Chart.min.js' %}"></script>
+        <script type="text/javascript">
+            $.get('{% url "chart" advertisement.symbol.name %}', function(data) {
+                var ctx = $("#myChart").get(0).getContext("2d");
+                new Chart(ctx, {
+                    type: 'line', data: data
+                });
+                ctx.beginPath();
+                ctx.fillStyle = "#000";//or whatever color
+                ctx.arc(0,0,20,0,Math.PI*2); //maybe too big for you, but you get the point
+                ctx.fill();
+            });
+
+
+        </script>
 </div>
-<table>
+<table style="top: 700px; height: 400px">
     <tr>
         <td colspan="2">
-            <div class="name">{{ advertisement.title }}</div>
+            <div class="label"><strong>{{ advertisement.title }}</strong></div>
         </td>
     </tr>
     <tr>

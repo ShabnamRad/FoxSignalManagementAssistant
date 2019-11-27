@@ -1,12 +1,11 @@
 import symbol
 
-from django.contrib import messages
 from django.core.mail import EmailMessage
 from django.http import Http404
-from django.http import HttpResponse
-from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.template.loader import render_to_string
+from chartjs.views.lines import BaseLineChartView
+from django.utils.datetime_safe import strftime
 
 from advertisement.models import Signal, Signaler, ResetPassword
 from advertisement.utils import send_email_async
@@ -130,6 +129,19 @@ def change_password(request):
             return redirect('home')
         else:
             return render(request, '../templates/change_password.html', {'form': form})
+
+
+class LineChartJsonView(BaseLineChartView):
+    def get_labels(self):
+        arr = stock_data[symbols[self.kwargs['symbol']]]
+        return [strftime(x[0], '%Y-%m') for x in arr]
+
+    def get_providers(self):
+        return ['Price', 'Signaler']
+
+    def get_data(self):
+        arr = stock_data[symbols[self.kwargs['symbol']]]
+        return [[x[1] for x in arr]]
 
 
 def advertisement_detail(request, advertisement_id):
