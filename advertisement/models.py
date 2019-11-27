@@ -14,7 +14,6 @@ def get_image_path(instance, filename):
 
 class Signal(models.Model):
     title = models.CharField(max_length=80)
-    user_id = models.CharField(max_length=80)
     is_succeeded = models.BooleanField(default=None, blank=True, null=True)
     profit = models.FloatField(default=None, blank=True, null=True)
     start_date = models.DateField()
@@ -28,16 +27,20 @@ class Signal(models.Model):
     def __str__(self):
         return self.title + ' ' + self.symbol.name
 
+    @property
+    def user_id(self):
+        return self.signaler.first_name
+
 
 class Signaler(models.Model):
     first_name = models.CharField(max_length=30)
-    last_name = models.CharField(max_length=30)
-    email = models.EmailField(unique=True)
-    phone = models.CharField(max_length=12)
-    sex = models.CharField(max_length=1, choices=SEX_CHOICES)
-    age = models.IntegerField()
+    last_name = models.CharField(max_length=30, null=True)
+    email = models.EmailField(unique=True, null=True)
+    phone = models.CharField(max_length=12, null=True)
+    sex = models.CharField(max_length=1, choices=SEX_CHOICES, null=True)
+    age = models.IntegerField(null=True)
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return self.first_name + ' ' + self.last_name

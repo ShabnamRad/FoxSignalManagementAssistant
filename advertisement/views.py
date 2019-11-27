@@ -1,6 +1,7 @@
 import symbol
 
 from django.core.mail import EmailMessage
+from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import render, redirect
 from django.template.loader import render_to_string
@@ -18,7 +19,7 @@ from django.contrib.auth import authenticate, login, logout
 def search(request):
     if request.method == 'GET':
         form = SearchForm()
-        ads = Signal.objects.all()
+        ads = Signal.objects.all()[:100]
         return render(request, '../templates/search.html', {
             'ads': ads,
             'form': form
@@ -27,7 +28,7 @@ def search(request):
         form = SearchForm(request.POST)
         if form.is_valid():
             title = form.cleaned_data['title']
-            ads = Signal.objects.filter(title__contains=title)
+            ads = Signal.objects.filter(Q(title__contains=title) | Q(symbol__name__contains=title) | Q(signaler__first_name__contains=title))[:100]
             return render(request, '../templates/search.html', {
                 'ads': ads,
                 'form': form
