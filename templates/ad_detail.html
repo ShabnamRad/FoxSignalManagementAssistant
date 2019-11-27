@@ -21,25 +21,24 @@
         </td>
     </tr>
     <tr>
-        <td class="details-td">
-            <div class="label">Call</div>
-            :
-            <div class="call">{{ advertisement.phone }}</div>
-            <br>
-            <div class="label">City</div>
-            :
-            <div class="city">{{ advertisement.area.city }}</div>
-            <br>
-            <div class="label">Price</div>
-            :
-            <div class="price">{{ advertisement.price }}</div>
-            <br>
+        <td class="description-td">
             <div class="label">Signaler</div>
             :
-            <div class="advertiser">{{ advertisement.advertiser.first_name }} {{ advertisement.advertiser.last_name }}</div>
-        </td>
-        <td class="description-td">
-            <div class="description" spellcheck="false">{{ advertisement.description }}</div>
+            <div class="call">{{ advertisement.user_id }}</div>
+            <br>
+            <div class="label">Symbol</div>
+            :
+            <div class="city">{{ advertisement.symbol }}</div>
+            <br>
+            <div class="label">Return</div>
+            :
+            <div class="city">{{ advertisement.expected_return }}</div>
+            <br>
+            <div class="label">Risk</div>
+            :
+            <div class="city">{{ advertisement.expected_risk }}</div>
+            <br>
+            <p>From {{ advertisement.start_date }} to {{ advertisement.close_date }}</p>
         </td>
     </tr>
 </table>
