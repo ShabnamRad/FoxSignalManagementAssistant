@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load staticfiles %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
+
+    <title>Details</title>
+    <link rel="stylesheet" href="{% static 'ad_detail_style.css' %}">
+
+</head>
+<body>
+<div>
+    <img class="image" src='{{ advertisement.profile_image.url }}' alt="ad image"/>
+</div>
+<table>
+    <tr>
+        <td colspan="2">
+            <div class="name">{{ advertisement.title }}</div>
+        </td>
+    </tr>
+    <tr>
+        <td class="details-td">
+            <div class="label">Call</div>
+            :
+            <div class="call">{{ advertisement.phone }}</div>
+            <br>
+            <div class="label">City</div>
+            :
+            <div class="city">{{ advertisement.area.city }}</div>
+            <br>
+            <div class="label">Price</div>
+            :
+            <div class="price">{{ advertisement.price }}</div>
+            <br>
+            <div class="label">Signaler</div>
+            :
+            <div class="advertiser">{{ advertisement.advertiser.first_name }} {{ advertisement.advertiser.last_name }}</div>
+        </td>
+        <td class="description-td">
+            <div class="description" spellcheck="false">{{ advertisement.description }}</div>
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>

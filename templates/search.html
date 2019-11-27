@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load staticfiles %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
+
+    <title>Fox Assistant</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="icon" href="{% static 'favicon.ico' %}">
+</head>
+<body>
+<div class="grid">
+    <div class="row"></div>
+    <div class="row">
+        <div class="col-xs-10 col-md-8 col-lg-8 col-sm-8 offset-xs-1 offset-md-2 offset-lg-2 offset-sm-2 the-box">
+            <div class="well bs-component">
+                <form method="post" class="form-horizontal">
+                    {% csrf_token %}
+                    <fieldset>
+                        <legend>Search among thousands of signals!</legend>
+                        <div class="form-group" style="display: flex; align-items: center;">
+                            <img class="col-xs-1 col-sm-1 col-md-1 col-lg-1 control-label"
+                                 src="../static/search-icon.png" alt="search icon"
+                                 style="width: 40px; height: 40px; padding: 0"/>
+                            <div class="col-xs-10 col-sm-10 col-md-10 col-lg-10">{{ form.title }}</div>
+                            <button type="submit" value="continue" onclick="location.href='{% url 'search' %}'"
+                                    class="btn btn-default">Search
+                            </button>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+        <div class="col-xs-10 col-md-8 col-lg-8 col-sm-8 offset-xs-1 offset-md-2 offset-lg-2 offset-sm-2 the-box
+                list-group table-of-contents" style="margin-top: 30px">
+            {% for ad in ads %}
+                <div class="list-group-item" onclick="">
+                    <div style="display: flex; justify-content: space-between">
+                        <div style="float: left; flex-grow: 1" class="search-res">
+{#                            <img style="width: 80px; height: 80px" alt="ad-image" src='/media/{{ ad.profile_image }}'/>#}
+                            <h2>{{ ad.title }}</h2>
+                            <h6>user_id: {{ ad.user_id }}</h6>
+                            <h6>symbol: {{ ad.symbol }}</h6>
+                            <h6><a href={% url 'advertisement_detail' ad.id %}>See more</a></h6>
+                        </div>
+                        <p style="float: right; margin: auto 10px; font-size: 25px; font-weight: bold; color: green">{{ ad.expected_return }}</p>
+                        <p style="float: right; margin: auto 10px; font-size: 25px; font-weight: bold; color: red">{{ ad.expected_risk }}</p>
+                    </div>
+                    <p style="float: right; margin: auto 10px; font-size: 15px; font-weight: bold">{{ ad.start_date }} to {{ ad.close_date }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+</body>
+</html>

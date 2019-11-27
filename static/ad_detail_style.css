@@ -1,0 +1,97 @@
+@import url(https://fonts.googleapis.com/css?family=Roboto+Condensed:300);
+
+body {
+
+    background: -webkit-linear-gradient(to left, #720014, rgba(57, 3, 0, 0.29)); /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to left, rgb(114, 0, 20), rgba(114, 25, 1, 0.21)); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+    color: #666;
+    font-family: 'Roboto Condensed', sans-serif;
+}
+
+table {
+    position: absolute;
+    top: 75%;
+    left: 50%;
+    width: 1400px;
+
+    transition: all 0.2s ease;
+
+    transform: translateX(-50%) translateY(-50%);
+
+    background: #fff;
+
+    padding: 20px;
+}
+
+.image {
+    position: absolute;
+    top: 7%;
+    left: 4.5%;
+    width: 400px;
+    height: 350px;
+}
+
+.name {
+    font-size: 30px;
+    border-bottom: 2px solid #888;
+    margin-bottom: 20px;
+}
+
+.name:first-letter {
+    font-size: 150%;
+}
+
+.label {
+    width: 70px;
+    font-weight: bold;
+}
+
+.label, .call, .email, .city, .price, .advertiser {
+    display: inline-block;
+}
+
+.details-td {
+    border-right: 1px solid #eee;
+    white-space: nowrap;
+
+    padding: 20px 30px 20px 20px;
+}
+
+.description-td {
+    position: relative;
+    width: 100%;
+    padding: 20px 30px;
+    text-align: justify;
+    margin-top: 15px;
+}
+
+.description {
+    outline: 0px solid transparent;
+    border: 0px solid transparent;
+}
+
+.edit {
+    position: absolute;
+    top: 0px;
+    right: 0;
+
+    width: 13px;
+    height: 13px;
+
+    cursor: pointer;
+}
+
+.update {
+    display: none;
+    position: absolute;
+    right: 20px;
+    bottom: 0;
+    background: #c2e59c;
+    border: 0;
+    padding: 5px;
+    width: 80px;
+    color: #333;
+    outline: 0px solid transparent;
+    border: 0px solid transparent;
+}

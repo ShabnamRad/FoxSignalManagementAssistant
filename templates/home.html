@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load staticfiles %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
+
+    <title>Fox Assistant</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="icon" href="{% static 'favicon.ico' %}">
+</head>
+<body style="background-image: url({% static 'Stock_bg.jpg' %})">
+<div class="grid">
+    <div class="row"></div>
+    <div class="row">
+        <div class="col-10 offset-1 greeting">
+            Welcome to the Fox Assistant!
+            <p style="color: white">The most amazing signals management tool for stock market.</p>
+        </div>
+    </div>
+    <div class="row mt-5">
+        <div class="col-3 offset-1">
+            <a class="btn btn-block btn-dark" href="http://127.0.0.1:8000/register">Register</a>
+        </div>
+        <div class="col-3">
+            <a class="btn btn-block btn-light" href="http://127.0.0.1:8000/login">Login</a>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-4 offset-1 browse-link">
+            <a href="http://127.0.0.1:8000/signal/search">Browse Signals Without Registration</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

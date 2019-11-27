@@ -1,0 +1,8 @@
+Dear {{ username }}
+
+You recently requested to reset your password for your Fox Corporation account. Click the link below to reset it.
+
+{{ reset_link }}
+
+Best wishes,
+Fox Corporation
