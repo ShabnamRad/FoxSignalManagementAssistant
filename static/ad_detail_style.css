@@ -2,8 +2,9 @@
 
 body {
 
-    background: -webkit-linear-gradient(to left, #720014, rgba(57, 3, 0, 0.29)); /* Chrome 10-25, Safari 5.1-6 */
-    background: linear-gradient(to left, rgb(114, 0, 20), rgba(114, 25, 1, 0.21)); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    background: darkgray;
+    /*background: -webkit-linear-gradient(to left, #720014, rgba(57, 3, 0, 0.29)); !* Chrome 10-25, Safari 5.1-6 *!*/
+    /*background: linear-gradient(to left, rgb(114, 0, 20), rgba(114, 25, 1, 0.21)); !* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ *!*/
 
     color: #666;
     font-family: 'Roboto Condensed', sans-serif;

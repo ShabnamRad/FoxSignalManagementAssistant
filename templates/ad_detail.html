@@ -11,13 +11,13 @@
 
 </head>
 <body>
-<div style="width: 400px; height: 40px">
+<div style="width: 700px; height: 40px">
         <canvas id="myChart" width="10" height="10"></canvas>
 
         <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
         <script type="text/javascript" src="{% static 'js/Chart.min.js' %}"></script>
         <script type="text/javascript">
-            $.get('{% url "chart" advertisement.symbol.name %}', function(data) {
+            $.get('{% url "chart" advertisement.symbol.name advertisement.id %}', function(data) {
                 var ctx = $("#myChart").get(0).getContext("2d");
                 new Chart(ctx, {
                     type: 'line', data: data
@@ -31,7 +31,7 @@
 
         </script>
 </div>
-<table style="top: 700px; height: 400px">
+<table style="top: 1000px; height: 400px">
     <tr>
         <td colspan="2">
             <div class="label"><strong>{{ advertisement.title }}</strong></div>

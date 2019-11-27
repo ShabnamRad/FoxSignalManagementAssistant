@@ -142,7 +142,12 @@ class LineChartJsonView(BaseLineChartView):
 
     def get_data(self):
         arr = stock_data[symbols[self.kwargs['symbol']]]
-        return [[x[1] for x in arr]]
+        arr2 = [None for x in arr]
+        adv = Signal.objects.get(id=self.kwargs['ad'])
+        for i, x in enumerate(arr):
+            if x[0].date() >= adv.start_date and x[0].date() <= adv.close_date:
+                arr2[i] = x[1]
+        return [[x[1] for x in arr], arr2]
 
 
 def advertisement_detail(request, advertisement_id):
