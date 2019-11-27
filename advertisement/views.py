@@ -1,3 +1,5 @@
+import symbol
+
 from django.contrib import messages
 from django.core.mail import EmailMessage
 from django.http import Http404
@@ -8,6 +10,8 @@ from django.template.loader import render_to_string
 
 from advertisement.models import Signal, Signaler, ResetPassword
 from advertisement.utils import send_email_async
+from database import symbols
+from main import stock_data
 from .forms import SearchForm, AddSignalForm, LoginForm, ResetPassForm, AddSignalerForm, SubmitPassword
 from django.contrib.auth import authenticate, login, logout
 
@@ -126,9 +130,6 @@ def change_password(request):
             return redirect('home')
         else:
             return render(request, '../templates/change_password.html', {'form': form})
-
-
-
 
 
 def advertisement_detail(request, advertisement_id):
