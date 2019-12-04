@@ -159,14 +159,18 @@ header nav ul li:nth-child(3) a:before {
 }
 
 header nav ul li:nth-child(4) a:before {
-    content: "\e771";
+    content: "\1F4A1";
 }
 
 header nav ul li:nth-child(5) a:before {
-    content: "\2699";
+    content: "\e771";
 }
 
 header nav ul li:nth-child(6) a:before {
+    content: "\2699";
+}
+
+header nav ul li:nth-child(7) a:before {
     content: "\E741";
 }
 

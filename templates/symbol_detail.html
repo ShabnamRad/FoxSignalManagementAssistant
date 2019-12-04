@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+    {% load staticfiles %}
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
+
+        <title>Details</title>
+        <link rel="stylesheet" href="{% static 'ad_detail_style.css' %}">
+
+    </head>
+
+    <body>
+        <h2 style="text-align: center">{{ symbol.name }}</h2>
+        <div style="width: 700px; height: 30px">
+            <canvas id="myChart" width="10" height="10"></canvas>
+
+            <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
+            <script type="text/javascript" src="{% static 'js/Chart.min.js' %}"></script>
+            <script type="text/javascript">
+                $.get('{% url "symbol_chart" symbol.name %}', function (data) {
+                    var ctx = $("#myChart").get(0).getContext("2d");
+                    new Chart(ctx, {
+                        type: 'line', data: data
+                    });
+                    ctx.beginPath();
+                    ctx.fillStyle = "#000";//or whatever color
+                    ctx.arc(0, 0, 20, 0, Math.PI * 2); //maybe too big for you, but you get the point
+                    ctx.fill();
+                });
+            </script>
+        </div>
+    </body>
+</html>

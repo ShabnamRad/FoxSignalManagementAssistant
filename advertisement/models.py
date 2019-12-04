@@ -16,20 +16,24 @@ class Signal(models.Model):
     title = models.CharField(max_length=80)
     is_succeeded = models.BooleanField(default=None, blank=True, null=True)
     profit = models.FloatField(default=None, blank=True, null=True)
-    start_date = models.DateField()
-    close_date = models.DateField()
-    expected_return = models.FloatField()
-    expected_risk = models.FloatField()
+    start_date = models.DateField(default=None, blank=True, null=True)
+    close_date = models.DateField(default=None, blank=True, null=True)
+    expected_return = models.FloatField(default=None, blank=True, null=True)
+    expected_risk = models.FloatField(default=None, blank=True, null=True)
 
     symbol = models.ForeignKey('Symbol', on_delete=models.CASCADE)
-    signaler = models.ForeignKey('Signaler', on_delete=models.CASCADE)
+    signaler = models.ForeignKey('Signaler', on_delete=models.CASCADE, null=True, default="", blank=True)
+    expert = models.ForeignKey('Expert', on_delete=models.CASCADE, null=True, default="", blank=True)
 
     def __str__(self):
         return self.title + ' ' + self.symbol.name
 
     @property
     def user_id(self):
-        return self.signaler.first_name
+        if self.signaler:
+            return self.signaler.first_name
+        else:
+            return self.expert.display_name
 
 
 class Signaler(models.Model):
@@ -44,6 +48,16 @@ class Signaler(models.Model):
 
     def __str__(self):
         return self.first_name  # + ' ' + self.last_name
+
+
+class Expert(models.Model):
+    display_name = models.CharField(max_length=30)
+    first_name = models.CharField(max_length=80)
+    last_name = models.CharField(max_length=80)
+    website = models.URLField(max_length=200)
+
+    def __str__(self):
+        return self.display_name
 
 
 class Symbol(models.Model):

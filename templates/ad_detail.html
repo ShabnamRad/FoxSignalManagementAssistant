@@ -11,54 +11,50 @@
 
 </head>
 <body>
-<div style="width: 700px; height: 40px">
-        <canvas id="myChart" width="10" height="10"></canvas>
-
-        <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
-        <script type="text/javascript" src="{% static 'js/Chart.min.js' %}"></script>
-        <script type="text/javascript">
-            $.get('{% url "chart" advertisement.symbol.name advertisement.id %}', function(data) {
-                var ctx = $("#myChart").get(0).getContext("2d");
-                new Chart(ctx, {
-                    type: 'line', data: data
-                });
-                ctx.beginPath();
-                ctx.fillStyle = "#000";//or whatever color
-                ctx.arc(0,0,20,0,Math.PI*2); //maybe too big for you, but you get the point
-                ctx.fill();
-            });
-
-
-        </script>
+<div>
+    <div class="grid">
+        <div class="row">
+            <div class="col-xs-10 col-md-8 col-lg-8 col-sm-8 offset-xs-1 offset-md-2 offset-lg-2 offset-sm-2 the-box
+                list-group table-of-contents" style="margin-top: 30px">
+                <div class="list-group-item" onclick="">
+                    <div style="display: flex; justify-content: space-between; flex-direction: column">
+                        <p style="float: right; margin: auto 10px; font-size: 20px; font-weight: bold;">{{ advertisement.title }}</p>
+                        <p style="float: right; margin: auto 10px; font-size: 15px; font-weight: bold;">expert: {{ advertisement.user_id }}</p>
+                        <p style="float: right; margin: auto 10px; font-size: 15px; font-weight: bold;">symbol: {{ advertisement.symbol }}</p>
+                        <p style="float: right; margin: auto 10px; font-size: 15px; font-weight: bold; color: green">Expected Return: {{ advertisement.expected_return }}</p>
+                        <p style="float: right; margin: auto 10px; font-size: 15px; font-weight: bold; color: red">Expected Risk: {{ advertisement.expected_risk }}</p>
+                        <p style="float: right; margin: auto 10px; font-size: 15px; font-weight: bold">
+                            {% if advertisement.start_date %}
+                                {{ advertisement.start_date }}
+                            {% endif %}
+                            {% if advertisement.close_date %}
+                                to {{ advertisement.close_date }}
+                            {% endif %}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<table style="top: 1000px; height: 400px">
-    <tr>
-        <td colspan="2">
-            <div class="label"><strong>{{ advertisement.title }}</strong></div>
-        </td>
-    </tr>
-    <tr>
-        <td class="description-td">
-            <div class="label">Signaler</div>
-            :
-            <div class="call">{{ advertisement.user_id }}</div>
-            <br>
-            <div class="label">Symbol</div>
-            :
-            <div class="city">{{ advertisement.symbol }}</div>
-            <br>
-            <div class="label">Return</div>
-            :
-            <div class="city">{{ advertisement.expected_return }}</div>
-            <br>
-            <div class="label">Risk</div>
-            :
-            <div class="city">{{ advertisement.expected_risk }}</div>
-            <br>
-            <p>From {{ advertisement.start_date }} to {{ advertisement.close_date }}</p>
-        </td>
-    </tr>
-</table>
+<div style="width: 700px; height: 30px">
+    <canvas id="myChart" width="10" height="10"></canvas>
 
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
+    <script type="text/javascript" src="{% static 'js/Chart.min.js' %}"></script>
+    <script type="text/javascript">
+        $.get('{% url "chart" advertisement.symbol.name advertisement.id %}', function (data) {
+            var ctx = $("#myChart").get(0).getContext("2d");
+            new Chart(ctx, {
+                type: 'line', data: data
+            });
+            ctx.beginPath();
+            ctx.fillStyle = "#000";//or whatever color
+            ctx.arc(0, 0, 20, 0, Math.PI * 2); //maybe too big for you, but you get the point
+            ctx.fill();
+        });
+
+
+    </script>
+</div>
 </body>
 </html>

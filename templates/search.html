@@ -42,7 +42,7 @@
                     <div style="display: flex; justify-content: space-between">
                         <div style="float: left; flex-grow: 1" class="search-res">
 {#                            <img style="width: 80px; height: 80px" alt="ad-image" src='/media/{{ ad.profile_image }}'/>#}
-                            <h2>{{ ad.title }}</h2>
+                            <h3 style="text-align: right; ">{{ ad.title }}</h3>
                             <h6>expert: {{ ad.user_id }}</h6>
                             <h6>symbol: {{ ad.symbol }}</h6>
                             <h6><a href={% url 'advertisement_detail' ad.id %}>See more</a></h6>
@@ -50,7 +50,13 @@
                         <p style="float: right; margin: auto 10px; font-size: 25px; font-weight: bold; color: green">{{ ad.expected_return }}</p>
                         <p style="float: right; margin: auto 10px; font-size: 25px; font-weight: bold; color: red">{{ ad.expected_risk }}</p>
                     </div>
-                    <p style="float: right; margin: auto 10px; font-size: 15px; font-weight: bold">{{ ad.start_date }} to {{ ad.close_date }}</p>
+                    <p style="float: right; margin: auto 10px; font-size: 15px; font-weight: bold">
+                        {% if ad.start_date %}
+                            {{ ad.start_date }}
+                        {% endif %}
+                        {% if ad.close_date %}
+                            to {{ ad.close_date }}
+                        {% endif %}</p>
                 </div>
             {% endfor %}
         </div>

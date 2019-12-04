@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import ModelForm
 
-from advertisement.models import Signal, Signaler
+from advertisement.models import Signal, Signaler, Expert
 from advertisement.validators import phone_validator, string_check
 from django.contrib.auth.models import User
 
@@ -15,7 +15,7 @@ class SearchForm(forms.Form):
 class AddSignalForm(ModelForm):
     class Meta:
         model = Signal
-        fields = '__all__'
+        exclude = ['signaler']
 
     def __init__(self, *args, **kwargs):
         super(AddSignalForm, self).__init__(*args, **kwargs)
@@ -40,7 +40,38 @@ class AddSignalForm(ModelForm):
 
     def save(self, commit=True):
         instance = super(AddSignalForm, self).save(commit=False)
-        instance.advertiser = Signaler.objects.filter(user=self.user)[0]
+        the_user = Signaler.objects.filter(user=self.user)
+        if len(the_user) > 0:
+            instance.advertiser = Signaler.objects.filter(user=self.user)[0]
+        else:
+            instance.advertiser = self.fields['expert']
+        if commit:
+            instance.save()
+        return instance
+
+
+class AddExpertForm(ModelForm):
+    class Meta:
+        model = Expert
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super(AddExpertForm, self).__init__(*args, **kwargs)
+        self.fields['display_name'].widget.attrs['placeholder'] = 'display_name'
+        self.fields['first_name'].widget.attrs['placeholder'] = 'first_name'
+        self.fields['last_name'].widget.attrs['placeholder'] = 'last_name'
+        self.fields['website'].widget.attrs['placeholder'] = 'website'
+        self.fields['display_name'].widget.attrs['class'] = 'form-control '
+        self.fields['first_name'].widget.attrs['class'] = 'form-control '
+        self.fields['last_name'].widget.attrs['class'] = 'form-control '
+        self.fields['website'].widget.attrs['class'] = 'form-control '
+
+    def clean(self):
+        data = self.cleaned_data
+        return data
+
+    def save(self, commit=True):
+        instance = super(AddExpertForm, self).save(commit=False)
         if commit:
             instance.save()
         return instance

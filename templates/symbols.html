@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load staticfiles %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
+
+    <title>Fox Assistant</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="icon" href="{% static 'favicon.ico' %}">
+</head>
+<body>
+<div class="grid">
+    <div class="row">
+        <div class="col-xs-10 col-md-8 col-lg-8 col-sm-8 offset-xs-1 offset-md-2 offset-lg-2 offset-sm-2 the-box
+                list-group table-of-contents" style="margin-top: 30px">
+            {% for symbol in symbols %}
+                <div class="list-group-item" onclick="" style="text-align: right">
+                    <a href={% url 'symbol_detail' symbol.name %}>{{ symbol.name }}</a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+</body>
+</html>

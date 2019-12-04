@@ -8,11 +8,11 @@ from django.template.loader import render_to_string
 from chartjs.views.lines import BaseLineChartView
 from django.utils.datetime_safe import strftime
 
-from advertisement.models import Signal, Signaler, ResetPassword
+from advertisement.models import Signal, Signaler, Expert, Symbol, ResetPassword
 from advertisement.utils import send_email_async
 from database import symbols
 from main import stock_data
-from .forms import SearchForm, AddSignalForm, LoginForm, ResetPassForm, AddSignalerForm, SubmitPassword
+from .forms import SearchForm, AddSignalForm, LoginForm, ResetPassForm, AddSignalerForm, AddExpertForm, SubmitPassword
 from django.contrib.auth import authenticate, login, logout
 
 
@@ -49,6 +49,28 @@ def add_advertisement(request):
             return redirect('search')
         else:
             return render(request, '../templates/add_signal.html', {'form': form})
+
+
+def add_expert(request):
+    if request.method == 'GET':
+        form = AddExpertForm()
+        return render(request, '../templates/add_expert.html', {'form': form})
+    else:
+        form = AddExpertForm(request.POST, request.FILES)
+        form.user = request.user
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard')
+        else:
+            return render(request, '../templates/add_expert.html', {'form': form})
+
+
+def symbols_list(request):
+    if request.method == 'GET':
+        symbols = Symbol.objects.all()
+        return render(request, '../templates/symbols.html', {
+            'symbols': symbols
+        })
 
 
 def dashboard(request):
@@ -150,6 +172,17 @@ class LineChartJsonView(BaseLineChartView):
         return [[x[1] for x in arr], arr2]
 
 
+class SymbolChartJsonView(BaseLineChartView):
+    def get_labels(self):
+        arr = stock_data[symbols[self.kwargs['symbol']]]
+        return [strftime(x[0], '%Y-%m') for x in arr]
+
+    def get_data(self):
+        arr = stock_data[symbols[self.kwargs['symbol']]]
+        arr2 = [None for x in arr]
+        return [[x[1] for x in arr], arr2]
+
+
 def advertisement_detail(request, advertisement_id):
     try:
         advertisement = Signal.objects.get(pk=advertisement_id)
@@ -157,4 +190,14 @@ def advertisement_detail(request, advertisement_id):
             'advertisement': advertisement
         })
     except Signal.DoesNotExist:
+        raise Http404("Question does not exist")
+
+
+def symbol_detail(request, symbol_name):
+    try:
+        symbol_obj = Symbol.objects.get(name=symbol_name)
+        return render(request, '../templates/symbol_detail.html', {
+            'symbol': symbol_obj
+        })
+    except Symbol.DoesNotExist:
         raise Http404("Question does not exist")
