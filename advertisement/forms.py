@@ -20,14 +20,12 @@ class AddSignalForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(AddSignalForm, self).__init__(*args, **kwargs)
         self.fields['title'].widget.attrs['placeholder'] = 'title'
-        self.fields['user_id'].widget.attrs['placeholder'] = 'user_id'
         self.fields['profit'].widget.attrs['placeholder'] = 'profit'
         self.fields['start_date'].widget.attrs['placeholder'] = 'start_date'
         self.fields['close_date'].widget.attrs['placeholder'] = 'close_date'
         self.fields['expected_return'].widget.attrs['placeholder'] = 'expected_return'
         self.fields['expected_risk'].widget.attrs['placeholder'] = 'expected_risk'
         self.fields['title'].widget.attrs['class'] = 'form-control '
-        self.fields['user_id'].widget.attrs['class'] = 'form-control '
         self.fields['profit'].widget.attrs['class'] = 'form-control '
         self.fields['start_date'].widget.attrs['class'] = 'form-control '
         self.fields['close_date'].widget.attrs['class'] = 'form-control '

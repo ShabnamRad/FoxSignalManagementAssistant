@@ -43,7 +43,7 @@ class Signaler(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
-        return self.first_name + ' ' + self.last_name
+        return self.first_name  # + ' ' + self.last_name
 
 
 class Symbol(models.Model):
