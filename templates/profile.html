@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load staticfiles %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
+
+    <title>Fox Assistant | Profile</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet"
+          type="text/css"
+          href="../static/dashboard_style.css"/>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="icon" href="{% static 'favicon.ico' %}">
+</head>
+
+<body class="bckg_right">
+<span class="bckg"></span>
+<header>
+    <h1>Dashboard</h1>
+    <nav>
+        <ul>
+            <li>
+                <a href="http://127.0.0.1:8000/signal/profile" data-title="Profile">My Profile</a>
+            </li>
+            <li>
+                <a href="http://127.0.0.1:8000/signal/add_signal" data-title="Submit">Submit Signals</a>
+            </li>
+            <li>
+                <a href="http://127.0.0.1:8000/signal/search" data-title="Search">Search Signals</a>
+            </li>
+            <li>
+                <a href="http://127.0.0.1:8000/signal/add_expert" data-title="AddExpert">Add Expert</a>
+            </li>
+            <li>
+                <a href="http://127.0.0.1:8000/signal/symbols" data-title="Symbols">Symbols</a>
+            </li>
+            <li>
+                <a href="javascript:void(0);" data-title="Settings">Settings</a>
+            </li>
+            <li>
+                <a href="{% url 'logout' %}" data-title="Logout">Logout</a>
+            </li>
+
+        </ul>
+    </nav>
+</header>
+<main>
+    <div class="title">
+        <h2>My Profile</h2>
+        <a href="javascript:void(0);">Hello {{ request.user.username }}!</a>
+    </div>
+    <div class="grid">
+        <div class="row">
+            <div class="col-xs-10 col-md-8 col-lg-8 col-sm-8 offset-xs-1 offset-md-2 offset-lg-2 offset-sm-2 the-box
+                    list-group table-of-contents" style="margin-top: 30px">
+                {% for ad in ads %}
+                    <div class="list-group-item" onclick="">
+                        <div style="display: flex; justify-content: space-between">
+                            <div style="float: left; flex-grow: 1" class="search-res">
+                                <h3 style="text-align: right; "><a style="color: black; font-size: x-large" href={% url 'advertisement_detail' ad.id %}>{{ ad.title }}</a></h3>
+                                <h6>expert: {{ ad.user_id }}</h6>
+                                <h6>symbol: {{ ad.symbol }}</h6>
+                                <h6><a href={% url 'advertisement_detail' ad.id %}>See more</a></h6>
+                            </div>
+                            <p style="float: right; margin: auto 10px; font-size: 25px; font-weight: bold; color: green">{{ ad.expected_return }}</p>
+                            <p style="float: right; margin: auto 10px; font-size: 25px; font-weight: bold; color: red">{{ ad.expected_risk }}</p>
+                        </div>
+                        <p style="float: right; margin: auto 10px; font-size: 15px; font-weight: bold">
+                            {% if ad.start_date %}
+                                {{ ad.start_date }}
+                            {% endif %}
+                            {% if ad.close_date %}
+                                to {{ ad.close_date }}
+                            {% endif %}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

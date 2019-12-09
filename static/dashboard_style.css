@@ -53,6 +53,7 @@ a {
 .bckg_right {
     background-image: url("Stock_bg_bw.jpg");
     background-size: cover;
+    padding-top: 0;
 }
 
 h1 {

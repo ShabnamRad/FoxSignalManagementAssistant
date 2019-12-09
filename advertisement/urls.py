@@ -8,6 +8,7 @@ urlpatterns = [
     path('add_signal', views.add_advertisement, name='add_advertisement'),
     path('add_expert', views.add_expert, name='add_expert'),
     path('symbols', views.symbols_list, name='symbols'),
+    path('profile', views.profile, name='profile'),
     path('<int:advertisement_id>/', views.advertisement_detail, name='advertisement_detail'),
     path('<str:symbol_name>/', views.symbol_detail, name='symbol_detail'),
     path('chart/<str:symbol>/<int:ad>', views.LineChartJsonView.as_view(), name='chart'),

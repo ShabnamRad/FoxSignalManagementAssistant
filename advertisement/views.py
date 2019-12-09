@@ -73,6 +73,13 @@ def symbols_list(request):
         })
 
 
+def profile(request):
+    ads = Signal.objects.all()[:100]
+    return render(request, '../templates/profile.html', {
+            'ads': ads
+        })
+
+
 def dashboard(request):
     return render(request, '../templates/dashboard.html')
 
@@ -177,10 +184,12 @@ class SymbolChartJsonView(BaseLineChartView):
         arr = stock_data[symbols[self.kwargs['symbol']]]
         return [strftime(x[0], '%Y-%m') for x in arr]
 
+    def get_providers(self):
+        return ['Price']
+
     def get_data(self):
         arr = stock_data[symbols[self.kwargs['symbol']]]
-        arr2 = [None for x in arr]
-        return [[x[1] for x in arr], arr2]
+        return [[x[1] for x in arr]]
 
 
 def advertisement_detail(request, advertisement_id):

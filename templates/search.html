@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
 
-    <title>Fox Assistant</title>
+    <title>Fox Assistant | Search Signals</title>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="{% static 'style.css' %}">
@@ -41,11 +41,10 @@
                 <div class="list-group-item" onclick="">
                     <div style="display: flex; justify-content: space-between">
                         <div style="float: left; flex-grow: 1" class="search-res">
-{#                            <img style="width: 80px; height: 80px" alt="ad-image" src='/media/{{ ad.profile_image }}'/>#}
-                            <h3 style="text-align: right; ">{{ ad.title }}</h3>
+                            <h3 style="text-align: right"><a style="color: black" href={% url 'advertisement_detail' ad.id %}>{{ ad.title }}</a></h3>
                             <h6>expert: {{ ad.user_id }}</h6>
                             <h6>symbol: {{ ad.symbol }}</h6>
-                            <h6><a href={% url 'advertisement_detail' ad.id %}>See more</a></h6>
+                            <h6><a style="color: #6e6e6e" href={% url 'advertisement_detail' ad.id %}>See more</a></h6>
                         </div>
                         <p style="float: right; margin: auto 10px; font-size: 25px; font-weight: bold; color: green">{{ ad.expected_return }}</p>
                         <p style="float: right; margin: auto 10px; font-size: 25px; font-weight: bold; color: red">{{ ad.expected_risk }}</p>
