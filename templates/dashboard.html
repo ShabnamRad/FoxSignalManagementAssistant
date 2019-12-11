@@ -5,11 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
-    <title>Dashboard</title>
+    <title>Fox Assistant | {% block title %} Dashboard {% endblock %}</title>
+    <link rel="icon" href="{% static 'favicon.ico' %}">
+
+    {% block head %}
+    {% endblock %}
+
     <link rel="stylesheet"
           type="text/css"
           href="../static/dashboard_style.css"/>
-    <link rel="icon" href="{% static 'favicon.ico' %}">
+
 </head>
 <body class="bckg_right" style="padding-top: 0">
 
@@ -48,7 +53,9 @@
         <h2>My Profile</h2>
         <a href="javascript:void(0);">Hello {{ request.user.username }}!</a>
     </div>
+<br>
+{% block content %}
+{% endblock %}
 </main>
-
 </body>
 </html>

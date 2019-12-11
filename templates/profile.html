@@ -1,57 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-{% load staticfiles %}
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
+{% extends 'dashboard.html' %}
+{% load static %}
 
-    <title>Fox Assistant | Profile</title>
+{% block title %}
+Profile
+{% endblock %}
 
+{% block head %}
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-    <link rel="stylesheet"
-          type="text/css"
-          href="../static/dashboard_style.css"/>
     <link rel="stylesheet" href="{% static 'style.css' %}">
     <link rel="icon" href="{% static 'favicon.ico' %}">
-</head>
+{% endblock %}
 
-<body class="bckg_right">
-<span class="bckg"></span>
-<header style="position: sticky; top: 0">
-    <h1>Dashboard</h1>
-    <nav>
-        <ul>
-            <li>
-                <a href="http://127.0.0.1:8000/signal/profile" data-title="Profile">My Profile</a>
-            </li>
-            <li>
-                <a href="http://127.0.0.1:8000/signal/add_signal" data-title="Submit">Submit Signals</a>
-            </li>
-            <li>
-                <a href="http://127.0.0.1:8000/signal/search" data-title="Search">Search Signals</a>
-            </li>
-            <li>
-                <a href="http://127.0.0.1:8000/signal/add_expert" data-title="AddExpert">Add Expert</a>
-            </li>
-            <li>
-                <a href="http://127.0.0.1:8000/signal/symbols" data-title="Symbols">Symbols</a>
-            </li>
-            <li>
-                <a href="javascript:void(0);" data-title="Settings">Settings</a>
-            </li>
-            <li>
-                <a href="{% url 'logout' %}" data-title="Logout">Logout</a>
-            </li>
-
-        </ul>
-    </nav>
-</header>
-<main>
-    <div class="title" style="position: sticky; top: 0; z-index: 5">
-        <h2>My Profile</h2>
-        <a href="javascript:void(0);">Hello {{ request.user.username }}!</a>
-    </div>
+{% block content %}
     <div class="grid">
         <div class="row">
             <div class="col-xs-10 col-md-8 col-lg-8 col-sm-8 offset-xs-1 offset-md-2 offset-lg-2 offset-sm-2 the-box
@@ -80,6 +40,4 @@
             </div>
         </div>
     </div>
-</main>
-</body>
-</html>
+{% endblock %}
