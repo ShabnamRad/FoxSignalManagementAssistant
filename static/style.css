@@ -167,19 +167,15 @@ legend {
 }
 
 .follow-button {
-    border-radius: 100px;
-    background-color: #fff;
-    border: 1px solid #1da1f2;
-    color: #1da1f2;
+    background-color: #51f21a;
+    border: 1px solid #0a2506;
     cursor: pointer;
     text-align: center;
     font-weight: bold;
-    margin-left: 60px;
 }
 
 .follow-button:hover {
-    background-color: #d9f0ff;
-    color: #1da1f2;
+    background-color: #bdf5ad;
 }
 
 .adv-button {
