@@ -3,6 +3,7 @@ import os
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models import CASCADE
 
 from advertisement.constant import SEX_CHOICES
 from advertisement.utils import generate_random_token
@@ -22,7 +23,7 @@ class Signal(models.Model):
     expected_risk = models.FloatField(default=None, blank=True, null=True)
 
     symbol = models.ForeignKey('Symbol', on_delete=models.CASCADE)
-    signaler = models.ForeignKey('Signaler', on_delete=models.CASCADE, null=True, default="", blank=True)
+    # signaler = models.ForeignKey('Signaler', on_delete=models.CASCADE, null=True, default="", blank=True)
     expert = models.ForeignKey('Expert', on_delete=models.CASCADE, null=True, default="", blank=True)
 
     def __str__(self):
@@ -30,10 +31,7 @@ class Signal(models.Model):
 
     @property
     def user_id(self):
-        if self.signaler:
-            return self.signaler.first_name
-        else:
-            return self.expert.display_name
+        return self.expert.display_name
 
 
 class Signaler(models.Model):
@@ -45,6 +43,7 @@ class Signaler(models.Model):
     age = models.IntegerField(null=True)
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
+    expert = models.ForeignKey(to='Expert', null=True, blank=True, on_delete=CASCADE)
 
     def __str__(self):
         return self.first_name  # + ' ' + self.last_name
@@ -54,7 +53,7 @@ class Expert(models.Model):
     display_name = models.CharField(max_length=30)
     first_name = models.CharField(max_length=80)
     last_name = models.CharField(max_length=80)
-    website = models.URLField(max_length=200)
+    website = models.URLField(max_length=200, null=True)
 
     def __str__(self):
         return self.display_name
