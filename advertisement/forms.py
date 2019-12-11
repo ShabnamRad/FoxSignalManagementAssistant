@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import ModelForm
 
-from advertisement.models import Signal, Signaler, Expert
+from advertisement.models import Signal, Member, Expert
 from advertisement.validators import phone_validator, string_check
 from django.contrib.auth.models import User
 
@@ -40,9 +40,9 @@ class AddSignalForm(ModelForm):
 
     def save(self, commit=True):
         instance = super(AddSignalForm, self).save(commit=False)
-        the_user = Signaler.objects.filter(user=self.user)
+        the_user = Member.objects.filter(user=self.user)
         if len(the_user) > 0:
-            instance.advertiser = Signaler.objects.filter(user=self.user)[0]
+            instance.advertiser = Member.objects.filter(user=self.user)[0]
         else:
             instance.advertiser = self.fields['expert']
         if commit:
@@ -82,7 +82,7 @@ class AddSignalerForm(ModelForm):
     password = forms.CharField(widget=forms.PasswordInput)
 
     class Meta:
-        model = Signaler
+        model = Member
         exclude = ['user']
 
     def __init__(self, *args, **kwargs):

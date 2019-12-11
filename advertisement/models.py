@@ -34,7 +34,7 @@ class Signal(models.Model):
         return self.expert.display_name
 
 
-class Signaler(models.Model):
+class Member(models.Model):
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30, null=True)
     email = models.EmailField(unique=True, null=True)
@@ -43,7 +43,7 @@ class Signaler(models.Model):
     age = models.IntegerField(null=True)
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
-    expert = models.ForeignKey(to='Expert', null=True, blank=True, on_delete=CASCADE)
+    # expert = models.ForeignKey(to='Expert', null=True, blank=True, on_delete=CASCADE)
 
     def __str__(self):
         return self.first_name  # + ' ' + self.last_name
@@ -59,6 +59,14 @@ class Expert(models.Model):
         return self.display_name
 
 
+class Following(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    expert = models.ForeignKey('Expert', on_delete=CASCADE)
+
+    def __str__(self):
+        return self.user.username + " Following " + self.expert.display_name
+
+
 class Symbol(models.Model):
     name = models.CharField(max_length=30)
 
@@ -67,7 +75,7 @@ class Symbol(models.Model):
 
 
 class ResetPassword(models.Model):
-    advertiser = models.ForeignKey(Signaler, on_delete=models.CASCADE)
+    advertiser = models.ForeignKey(Member, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     token = models.CharField(max_length=32, default=generate_random_token)
 
