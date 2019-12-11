@@ -8,7 +8,7 @@ from django.template.loader import render_to_string
 from chartjs.views.lines import BaseLineChartView
 from django.utils.datetime_safe import strftime
 
-from advertisement.models import Signal, Signaler, Expert, Symbol, ResetPassword
+from advertisement.models import Signal, Member, Expert, Symbol, ResetPassword
 from advertisement.utils import send_email_async
 from database import symbols
 from main import stock_data
@@ -28,7 +28,7 @@ def search(request):
         form = SearchForm(request.POST)
         if form.is_valid():
             title = form.cleaned_data['title']
-            ads = Signal.objects.filter(Q(title__contains=title) | Q(symbol__name__contains=title) | Q(signaler__first_name__contains=title))[:100]
+            ads = Signal.objects.filter(Q(title__contains=title) | Q(symbol__name__contains=title) | Q(expert__display_name__contains=title))[:100]
             return render(request, '../templates/search.html', {
                 'ads': ads,
                 'form': form
@@ -127,7 +127,7 @@ def reset_password(request):
     else:
         form = ResetPassForm(request.POST, request.FILES)
         try:
-            advertiser = Signaler.objects.filter(email=form.data['email'])[0]
+            advertiser = Member.objects.filter(email=form.data['email'])[0]
             new_password = ResetPassword(advertiser=advertiser)
             new_password.save()
             subject = 'Reset Password'
@@ -138,7 +138,7 @@ def reset_password(request):
             email = EmailMessage(subject=subject, body=body, to=[advertiser.email])
             send_email_async(email)
             return redirect('home')
-        except Signaler.DoesNotExist:
+        except Member.DoesNotExist:
             return render(request, '../templates/forget_password.html', {
                 'form': form,
                 'error': 'No user with this email address'
