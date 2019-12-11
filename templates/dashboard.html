@@ -14,7 +14,7 @@
 <body class="bckg_right" style="padding-top: 0">
 
 <span class="bckg"></span>
-<header>
+<header style="position: sticky; top: 0">
     <h1>Dashboard</h1>
     <nav>
         <ul>
@@ -44,7 +44,7 @@
     </nav>
 </header>
 <main>
-    <div class="title">
+    <div class="title" style="position: sticky; top: 0; z-index: 5">
         <h2>My Profile</h2>
         <a href="javascript:void(0);">Hello {{ request.user.username }}!</a>
     </div>
