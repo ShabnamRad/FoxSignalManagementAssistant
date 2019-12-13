@@ -77,16 +77,16 @@ class AddExpertForm(ModelForm):
         return instance
 
 
-class AddSignalerForm(ModelForm):
+class RegisterForm(ModelForm):
     username = forms.CharField(max_length=20)
     password = forms.CharField(widget=forms.PasswordInput)
 
     class Meta:
         model = Member
-        exclude = ['user']
+        exclude = ['user', 'experts']
 
     def __init__(self, *args, **kwargs):
-        super(AddSignalerForm, self).__init__(*args, **kwargs)
+        super(RegisterForm, self).__init__(*args, **kwargs)
         self.fields['first_name'].widget.attrs['placeholder'] = 'first_name'
         self.fields['last_name'].widget.attrs['placeholder'] = 'last_name'
         self.fields['phone'].widget.attrs['placeholder'] = 'phone'
@@ -107,7 +107,7 @@ class AddSignalerForm(ModelForm):
         return data
 
     def save(self, commit=True):
-        instance = super(AddSignalerForm, self).save(commit=False)
+        instance = super(RegisterForm, self).save(commit=False)
         user_instance = User.objects.create_user(username=self.cleaned_data['username'],
                                                  password=self.cleaned_data['password'])
         user_instance.save()

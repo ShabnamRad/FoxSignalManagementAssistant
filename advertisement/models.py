@@ -23,7 +23,6 @@ class Signal(models.Model):
     expected_risk = models.FloatField(default=None, blank=True, null=True)
 
     symbol = models.ForeignKey('Symbol', on_delete=models.CASCADE)
-    # signaler = models.ForeignKey('Signaler', on_delete=models.CASCADE, null=True, default="", blank=True)
     expert = models.ForeignKey('Expert', on_delete=models.CASCADE, null=True, default="", blank=True)
 
     def __str__(self):
@@ -43,6 +42,7 @@ class Member(models.Model):
     age = models.IntegerField(null=True)
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
+    followings = models.ManyToManyField(to='Expert', related_name='followers')
     # expert = models.ForeignKey(to='Expert', null=True, blank=True, on_delete=CASCADE)
 
     def __str__(self):
@@ -57,14 +57,6 @@ class Expert(models.Model):
 
     def __str__(self):
         return self.display_name
-
-
-class Following(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    expert = models.ForeignKey('Expert', on_delete=CASCADE)
-
-    def __str__(self):
-        return self.user.username + " Following " + self.expert.display_name
 
 
 class Symbol(models.Model):

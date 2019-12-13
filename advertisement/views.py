@@ -2,7 +2,7 @@ import symbol
 
 from django.core.mail import EmailMessage
 from django.db.models import Q
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.shortcuts import render, redirect
 from django.template.loader import render_to_string
 from chartjs.views.lines import BaseLineChartView
@@ -12,7 +12,7 @@ from advertisement.models import Signal, Member, Expert, Symbol, ResetPassword
 from advertisement.utils import send_email_async
 from database import symbols
 from main import stock_data
-from .forms import SearchForm, AddSignalForm, LoginForm, ResetPassForm, AddSignalerForm, AddExpertForm, SubmitPassword
+from .forms import SearchForm, AddSignalForm, LoginForm, ResetPassForm, RegisterForm, AddExpertForm, SubmitPassword
 from django.contrib.auth import authenticate, login, logout
 
 
@@ -76,7 +76,7 @@ def symbols_list(request):
 
 
 def profile(request):
-    ads = Signal.objects.all()[:100]
+    ads = Signal.objects.filter(expert__in=request.user.member.followings.all())[:100]
     return render(request, '../templates/profile.html', {
         'ads': ads
     })
@@ -111,10 +111,10 @@ def logout_view(request):
 
 def register(request):
     if request.method == 'GET':
-        form = AddSignalerForm()
+        form = RegisterForm()
         return render(request, '../templates/register.html', {'form': form})
     else:
-        form = AddSignalerForm(request.POST)
+        form = RegisterForm(request.POST)
         if form.is_valid():
             form.save()
             return redirect('dashboard')
@@ -169,16 +169,28 @@ class LineChartJsonView(BaseLineChartView):
         return [strftime(x[0], '%Y-%m') for x in arr]
 
     def get_providers(self):
-        return ['Price', 'Signaler']
+        return ['Price', 'This Very Signal', 'Other Signals']
 
     def get_data(self):
         arr = stock_data[symbols[self.kwargs['symbol']]]
         arr2 = [None for x in arr]
+        arr3 = [None for x in arr]
         adv = Signal.objects.get(id=self.kwargs['ad'])
+
+        other_signals = Signal.objects.filter(expert=adv.expert, symbol=adv.symbol).order_by('start_date').values_list('start_date', 'close_date')
+        index = 0
+
         for i, x in enumerate(arr):
             if x[0].date() >= adv.start_date and x[0].date() <= adv.close_date:
                 arr2[i] = x[1]
-        return [[x[1] for x in arr], arr2]
+            u = False
+            for start, close in other_signals:
+                if x[0].date() >= start and x[0].date() <= close:
+                    u = True
+                    break
+            if u:
+                arr3[i] = x[1]
+        return [[x[1] for x in arr], arr2, arr3]
 
 
 class SymbolChartJsonView(BaseLineChartView):
@@ -214,10 +226,23 @@ def symbol_detail(request, symbol_name):
         raise Http404("Question does not exist")
 
 
-def expert_page(request, expert_display_name):
-    expert = Expert.objects.filter(display_name=expert_display_name)[0]
-    ads = Signal.objects.filter(expert=expert)
+def expert_page(request, expert_id):
+    expert = Expert.objects.get(id=expert_id)
+    ads = Signal.objects.filter(expert=expert).select_related('symbol')
+
+    securities = set(ads.values_list('symbol__id', 'symbol__name'))
     return render(request, '../templates/expert_page.html', {
         'expert': expert,
-        'ads': ads
+        'ads': ads,
+        'securities': securities,
     })
+
+
+def falo(request, expert_id):
+    request.user.member.followings.add(expert_id)
+    return HttpResponse("OK")
+
+
+def onfalo(request, expert_id):
+    request.user.member.followings.remove(expert_id)
+    return HttpResponse("OK")

@@ -1,5 +1,6 @@
 from django.urls import path
 
+from advertisement.views import falo, onfalo
 from . import views
 
 urlpatterns = [
@@ -11,7 +12,9 @@ urlpatterns = [
     path('profile', views.profile, name='profile'),
     path('<int:advertisement_id>/', views.advertisement_detail, name='advertisement_detail'),
     path('<str:symbol_name>/', views.symbol_detail, name='symbol_detail'),
-    path('expert/<str:expert_display_name>/', views.expert_page, name='expert_page'),
+    path('expert/<int:expert_id>/', views.expert_page, name='expert_page'),
     path('chart/<str:symbol>/<int:ad>', views.LineChartJsonView.as_view(), name='chart'),
     path('chart/<str:symbol>/', views.SymbolChartJsonView.as_view(), name='symbol_chart'),
+    path('falo/<int:expert_id>/', falo, name='falo'),
+    path('onfalo/<int:expert_id>/', onfalo, name='onfalo'),
 ]

@@ -6,42 +6,101 @@ Expert Page
 {% endblock %}
 
 {% block head %}
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="{% static 'style.css' %}">
-    <link rel="icon" href="{% static 'favicon.ico' %}">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="{% static 'style.css' %}?v=1">
+<link rel="icon" href="{% static 'favicon.ico' %}">
+
+<script src="{% static 'jquery.min.js' %}"></script>
 {% endblock %}
 
 {% block content %}
-    <div class="grid">
-        <div class="row">
-            <div class="col-xs-10 col-md-8 col-lg-8 col-sm-8 offset-xs-1 offset-md-2 offset-lg-2 offset-sm-2 the-box
+<div class="grid">
+    <div class="row">
+        <div class="col-xs-10 col-md-8 col-lg-8 col-sm-8 offset-xs-1 offset-md-2 offset-lg-2 offset-sm-2 the-box
                     list-group table-of-contents" style="margin-top: 30px">
-                <div style="display: flex; justify-content: space-between">
-                    <button class="follow-button" style="float: left">Follow this expert!</button>
-                    <h1 style="text-align: right; flex-grow: 1">{{ expert.display_name }}</h1>
-                </div>
-                {% for ad in ads %}
-                    <div class="list-group-item" onclick="">
-                        <div style="display: flex; justify-content: space-between">
-                            <div style="float: left; flex-grow: 1" class="search-res">
-                                <h3 style="text-align: right; "><a style="color: black; font-size: x-large" href={% url 'advertisement_detail' ad.id %}>{{ ad.title }}</a></h3>
-                                <h6><a style="color: black" href={% url 'expert_page' ad.user_id %}>expert: {{ ad.user_id }}</a></h6>
-                                <h6>symbol: {{ ad.symbol }}</h6>
-                                <h6><a href={% url 'advertisement_detail' ad.id %}>See more</a></h6>
-                            </div>
-                            <p style="float: right; margin: auto 10px; font-size: 25px; font-weight: bold; color: green">{{ ad.expected_return }}</p>
-                            <p style="float: right; margin: auto 10px; font-size: 25px; font-weight: bold; color: red">{{ ad.expected_risk }}</p>
-                        </div>
-                        <p style="float: right; margin: auto 10px; font-size: 15px; font-weight: bold">
-                            {% if ad.start_date %}
-                                {{ ad.start_date }}
-                            {% endif %}
-                            {% if ad.close_date %}
-                                to {{ ad.close_date }}
-                            {% endif %}</p>
-                    </div>
-                {% endfor %}
+            <div style="display: flex; justify-content: space-between">
+                <button id="onfalo" class="follow-button" style="float: left" type="submit" value="continue">Unfollow
+                    this
+                    expert!
+                </button>
+                <button id="falo" class="follow-button" style="float: left" type="submit" value="continue">Follow this
+                    expert!
+                </button>
+
+                {% if request.user.member in expert.followers.all %}
+                <script>
+                    $("#onfalo").show();
+                    $("#falo").hide();
+
+                </script>
+                {% else %}
+                <script>
+                            $("#falo").show();
+                            $("#onfalo").hide();
+
+                </script>
+
+                {% endif %}
+
+                <script>
+                            $('#onfalo').on('click', function(){
+                                $.ajax({
+                                    url: '{% url 'onfalo' expert.id %}',
+                                    success: function(response){
+                                        $("#falo").show();
+                                        $("#onfalo").hide();
+                                    }
+                                });
+                            });
+
+                            $('#falo').on('click', function(){
+                                $.ajax({
+                                    url: '{% url 'falo' expert.id %}',
+                                    success: function(response){
+                                        $("#onfalo").show();
+                                        $("#falo").hide();
+                                    }
+                                });
+                            });
+
+                </script>
+                <h1 style="text-align: right; flex-grow: 1">{{ expert.display_name }}</h1>
             </div>
+
+<!--            <div class="list-group-item" onclick="">-->
+<!--                <div style="display: flex; justify-content: space-between">-->
+<!--                    <div style="float: left; flex-grow: 1" class="search-res">-->
+<!--                        Securities:-->
+<!--                        {% for sec in securities %}-->
+<!--                            {{ sec.1 }}-->
+<!--                        {% endfor %}-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+
+            {% for ad in ads %}
+            <div class="list-group-item" onclick="">
+                <div style="display: flex; justify-content: space-between">
+                    <div style="float: left; flex-grow: 1" class="search-res">
+                        <h3 style="text-align: right; "><a style="color: black; font-size: x-large" href={% url
+                            'advertisement_detail' ad.id %}>{{ ad.title }}</a></h3>
+                        <h6><a style="color: black" href={% url 'expert_page' ad.expert.id %}>expert: {{ ad.user_id }}</a></h6>
+                        <h6>symbol: {{ ad.symbol }}</h6>
+                        <h6><a href={% url 'advertisement_detail' ad.id %}>See more</a></h6>
+                    </div>
+                    <p style="float: right; margin: auto 10px; font-size: 25px; font-weight: bold; color: green">{{ ad.expected_return }}</p>
+                    <p style="float: right; margin: auto 10px; font-size: 25px; font-weight: bold; color: red">{{ ad.expected_risk }}</p>
+                </div>
+                <p style="float: right; margin: auto 10px; font-size: 15px; font-weight: bold">
+                    {% if ad.start_date %}
+                    {{ ad.start_date }}
+                    {% endif %}
+                    {% if ad.close_date %}
+                    to {{ ad.close_date }}
+                    {% endif %}</p>
+            </div>
+            {% endfor %}
         </div>
     </div>
+</div>
 {% endblock %}
