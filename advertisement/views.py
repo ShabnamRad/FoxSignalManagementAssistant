@@ -166,31 +166,37 @@ def change_password(request):
 class LineChartJsonView(BaseLineChartView):
     def get_labels(self):
         arr = stock_data[symbols[self.kwargs['symbol']]]
-        return [strftime(x[0], '%Y-%m') for x in arr]
+        return [x[0] for x in arr]
 
     def get_providers(self):
-        return ['Price', 'This Very Signal', 'Other Signals']
+        return ['Buying Dates', 'Selling Dates', 'Other Signals', 'This Very Signal', 'Price']
 
     def get_data(self):
-        arr = stock_data[symbols[self.kwargs['symbol']]]
-        arr2 = [None for x in arr]
-        arr3 = [None for x in arr]
-        adv = Signal.objects.get(id=self.kwargs['ad'])
+        price_arr = stock_data[symbols[self.kwargs['symbol']]]
+        signal_arr = [None for x in price_arr]
+        other_signals_arr = [None for x in price_arr]
+        buy_arr = [None for x in price_arr]
+        sell_arr = [None for x in price_arr]
+        sig = Signal.objects.get(id=self.kwargs['ad'])
 
-        other_signals = Signal.objects.filter(expert=adv.expert, symbol=adv.symbol).order_by('start_date').values_list('start_date', 'close_date')
-        index = 0
+        other_signals = Signal.objects.filter(expert=sig.expert, symbol=sig.symbol).exclude(id=self.kwargs['ad']).order_by('start_date').values_list('start_date', 'close_date')
 
-        for i, x in enumerate(arr):
-            if x[0].date() >= adv.start_date and x[0].date() <= adv.close_date:
-                arr2[i] = x[1]
-            u = False
+        for i, x in enumerate(price_arr):
+            if x[0].date() >= sig.start_date and x[0].date() <= sig.close_date:
+                signal_arr[i] = x[1]
+                if x[0].date() == sig.start_date:
+                    buy_arr[i] = x[1]
+                if x[0].date() == sig.close_date:
+                    sell_arr[i] = x[1]
             for start, close in other_signals:
                 if x[0].date() >= start and x[0].date() <= close:
-                    u = True
+                    other_signals_arr[i] = x[1]
+                    if x[0].date() == start:
+                        buy_arr[i] = x[1]
+                    if x[0].date() == close:
+                        sell_arr[i] = x[1]
                     break
-            if u:
-                arr3[i] = x[1]
-        return [[x[1] for x in arr], arr2, arr3]
+        return [buy_arr, sell_arr, signal_arr, other_signals_arr, [x[1] for x in price_arr]]
 
 
 class SymbolChartJsonView(BaseLineChartView):

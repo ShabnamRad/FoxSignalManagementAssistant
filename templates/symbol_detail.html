@@ -12,7 +12,7 @@
     </head>
 
     <body style="text-align: -webkit-center">
-        <h2 style="text-align: center">{{ symbol.name }}</h2>
+        <h2 style="text-align: center; color: black">{{ symbol.name }}</h2>
         <div style="width: 700px; height: 30px;">
             <canvas id="myChart" width="10" height="10"></canvas>
 
@@ -22,12 +22,17 @@
                 $.get('{% url "symbol_chart" symbol.name %}', function (data) {
                     var ctx = $("#myChart").get(0).getContext("2d");
                     new Chart(ctx, {
-                        type: 'line', data: data
+                        type: 'line',
+                        data: {
+                            labels: data.labels,
+                            datasets: [{
+                                label: data.datasets[0].label,
+                                data: data.datasets[0].data,
+                                borderColor: "#434343",
+                                pointRadius: 1.5
+                            }]
+                        }
                     });
-                    ctx.beginPath();
-                    ctx.fillStyle = "#000";//or whatever color
-                    ctx.arc(0, 0, 20, 0, Math.PI * 2); //maybe too big for you, but you get the point
-                    ctx.fill();
                 });
             </script>
         </div>

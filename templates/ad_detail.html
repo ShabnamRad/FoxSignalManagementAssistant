@@ -19,10 +19,14 @@
                 <div class="list-group-item" onclick="">
                     <div style="display: flex; justify-content: space-between; flex-direction: column">
                         <p style="float: right; margin: auto 10px; font-size: 20px; font-weight: bold;">{{ advertisement.title }}</p>
-                        <p style="float: right; margin: auto 10px; font-size: 15px; font-weight: bold;">expert: {{ advertisement.user_id }}</p>
-                        <p style="float: right; margin: auto 10px; font-size: 15px; font-weight: bold;">symbol: {{ advertisement.symbol }}</p>
-                        <p style="float: right; margin: auto 10px; font-size: 15px; font-weight: bold; color: green">Expected Return: {{ advertisement.expected_return }}</p>
-                        <p style="float: right; margin: auto 10px; font-size: 15px; font-weight: bold; color: red">Expected Risk: {{ advertisement.expected_risk }}</p>
+                        <p style="float: right; margin: auto 10px; font-size: 15px; font-weight: bold;">
+                            expert: {{ advertisement.user_id }}</p>
+                        <p style="float: right; margin: auto 10px; font-size: 15px; font-weight: bold;">
+                            symbol: {{ advertisement.symbol }}</p>
+                        <p style="float: right; margin: auto 10px; font-size: 15px; font-weight: bold; color: green">
+                            Expected Return: {{ advertisement.expected_return }}</p>
+                        <p style="float: right; margin: auto 10px; font-size: 15px; font-weight: bold; color: red">
+                            Expected Risk: {{ advertisement.expected_risk }}</p>
                         <p style="float: right; margin: auto 10px; font-size: 15px; font-weight: bold">
                             {% if advertisement.start_date %}
                                 {{ advertisement.start_date }}
@@ -41,16 +45,65 @@
 
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
     <script type="text/javascript" src="{% static 'js/Chart.min.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/0.6.6/chartjs-plugin-zoom.js"></script>
     <script type="text/javascript">
         $.get('{% url "chart" advertisement.symbol.name advertisement.id %}', function (data) {
             var ctx = $("#myChart").get(0).getContext("2d");
+            data.datasets[0]['borderColor'] = "#20570d";
+            data.datasets[0]['pointRadius'] = 3;
+            data.datasets[0]['pointBackgroundColor'] = "#3dc11a";
+            data.datasets[0]['pointBorderColor'] = "#3dc11a";
+            data.datasets[0]['backgroundColor'] = "rgba(61,193,26,0.5)";
+            data.datasets[1]['pointRadius'] = 3;
+            data.datasets[1]['pointBorderColor'] = "#830800";
+            data.datasets[2]['borderColor'] = "#0076ff";
+            data.datasets[2]['pointRadius'] = 1.5;
+            data.datasets[2]['pointBackgroundColor'] = "#0076ff";
+            data.datasets[2]['pointBorderColor'] = "#0076ff";
+            data.datasets[2]['backgroundColor'] = "rgba(0,50,240,0.4)";
+            data.datasets[3]['borderColor'] = "#b2bb00";
+            data.datasets[3]['pointRadius'] = 1.5;
+            data.datasets[3]['pointBackgroundColor'] = "#b2bb00";
+            data.datasets[3]['pointBorderColor'] = "#b2bb00";
+            data.datasets[3]['backgroundColor'] = "rgba(238,240,0,0.34)";
+            data.datasets[4]['borderColor'] = "#434343";
+            data.datasets[4]['pointRadius'] = 1.5;
+            data.datasets[4]['pointBackgroundColor'] = "#434343";
+            data.datasets[4]['pointBorderColor'] = "#434343";
+            data.datasets[4]['backgroundColor'] = "rgba(75,75,75,0.5)";
             new Chart(ctx, {
-                type: 'line', data: data
+                type: 'line',
+                data: data,
+                options: {
+                    responsive: true,
+                    scales: {
+                        xAxes: [{
+                            type: 'time',
+                            distribution: 'linear',
+                            unit: 'day',
+                            bounds: 'data',
+                            ticks: { maxRotation: 0 }
+                        }]
+                    },
+                    pan: {
+                        enabled: true,
+                        mode: "x",
+                        speed: 10,
+                        threshold: 10
+                    },
+                    zoom: {
+                        enabled: true,
+                        drag: false,
+                        mode: "x",
+                        limits: {
+                            max: 10,
+                            min: 0.5
+                        }
+                    }
+                },
             });
-            ctx.beginPath();
-            ctx.fillStyle = "#000";//or whatever color
-            ctx.arc(0, 0, 20, 0, Math.PI * 2); //maybe too big for you, but you get the point
-            ctx.fill();
         });
 
 
