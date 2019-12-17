@@ -184,16 +184,16 @@ class LineChartJsonView(BaseLineChartView):
         for i, x in enumerate(price_arr):
             if x[0].date() >= sig.start_date and x[0].date() <= sig.close_date:
                 signal_arr[i] = x[1]
-                if x[0].date() == sig.start_date:
+                if x[0].date() == sig.start_date or i == 0 or price_arr[i-1][0].date() < sig.start_date:
                     buy_arr[i] = x[1]
-                if x[0].date() == sig.close_date:
+                if x[0].date() == sig.close_date or i == len(price_arr) or price_arr[i+1][0].date() > sig.close_date:
                     sell_arr[i] = x[1]
             for start, close in other_signals:
                 if x[0].date() >= start and x[0].date() <= close:
                     other_signals_arr[i] = x[1]
-                    if x[0].date() == start:
+                    if x[0].date() == start or i == 0 or price_arr[i-1][0].date() < start:
                         buy_arr[i] = x[1]
-                    if x[0].date() == close:
+                    if x[0].date() == close  or i == len(price_arr) or price_arr[i+1][0].date() > close:
                         sell_arr[i] = x[1]
                     break
         return [buy_arr, sell_arr, signal_arr, other_signals_arr, [x[1] for x in price_arr]]

@@ -84,7 +84,7 @@
                             distribution: 'linear',
                             unit: 'day',
                             bounds: 'data',
-                            ticks: { maxRotation: 0 }
+                            ticks: {maxRotation: 0}
                         }]
                     },
                     pan: {
@@ -100,6 +100,14 @@
                         limits: {
                             max: 10,
                             min: 0.5
+                        }
+                    },
+                    legend: {
+                        labels: {
+                            filter: function (item, chart) {
+                                // Logic to remove a particular legend item goes here
+                                return !item.text.includes('Dates');
+                            }
                         }
                     }
                 },
