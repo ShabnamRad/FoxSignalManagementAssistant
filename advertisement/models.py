@@ -3,7 +3,7 @@ import os
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
-from django.db.models import CASCADE
+from django.db.models import CASCADE, Max, Min
 
 from advertisement.constant import SEX_CHOICES
 from advertisement.utils import generate_random_token
@@ -54,9 +54,17 @@ class Expert(models.Model):
     first_name = models.CharField(max_length=80)
     last_name = models.CharField(max_length=80)
     website = models.URLField(max_length=200, null=True)
+    score = models.FloatField(default=1)
+    normalized_score = models.FloatField(default=1)
 
     def __str__(self):
         return self.display_name
+
+    def save(self, *args, **kwargs):
+        max_score = Expert.objects.all().aggregate(Max('score'))['score__max']
+        min_score = Expert.objects.all().aggregate(Min('score'))['score__min']
+        self.normalized_score = (self.score - min_score) / (max_score - min_score)
+        super(Expert, self).save(*args, **kwargs)
 
 
 class Symbol(models.Model):

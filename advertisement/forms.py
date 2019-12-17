@@ -53,7 +53,7 @@ class AddSignalForm(ModelForm):
 class AddExpertForm(ModelForm):
     class Meta:
         model = Expert
-        fields = '__all__'
+        exclude = ['score', 'normalized_score']
 
     def __init__(self, *args, **kwargs):
         super(AddExpertForm, self).__init__(*args, **kwargs)
@@ -83,7 +83,7 @@ class RegisterForm(ModelForm):
 
     class Meta:
         model = Member
-        exclude = ['user', 'experts']
+        exclude = ['user', 'experts', 'followings']
 
     def __init__(self, *args, **kwargs):
         super(RegisterForm, self).__init__(*args, **kwargs)
