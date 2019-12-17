@@ -1,120 +1,117 @@
-<!DOCTYPE html>
-<html lang="en">
-{% load staticfiles %}
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
+{% extends 'dashboard.html' %}
+{% load static %}
 
-    <title>Fox Assistant | Signal Details</title>
-    <link rel="stylesheet" href="{% static 'ad_detail_style.css' %}">
+{% block title %}
+    Adding Expert
+{% endblock %}
 
-</head>
-<body style="text-align: -webkit-center">
-<div>
-    <div class="grid">
+{% block head %}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'style.css' %}?v=1">
+    <link rel="icon" href="{% static 'favicon.ico' %}">
+{% endblock %}
+
+{% block content %}
+    <div style="text-align: -webkit-center" class="grid">
         <div class="row">
             <div class="col-xs-10 col-md-8 col-lg-8 col-sm-8 offset-xs-1 offset-md-2 offset-lg-2 offset-sm-2 the-box
-                list-group table-of-contents" style="margin-top: 30px">
-                <div class="list-group-item" onclick="">
-                    <div style="display: flex; justify-content: space-between; flex-direction: column">
-                        <p style="float: right; margin: auto 10px; font-size: 20px; font-weight: bold;">{{ advertisement.title }}</p>
-                        <p style="float: right; margin: auto 10px; font-size: 15px; font-weight: bold;">
-                            expert: {{ advertisement.user_id }}</p>
-                        <p style="float: right; margin: auto 10px; font-size: 15px; font-weight: bold;">
-                            symbol: {{ advertisement.symbol }}</p>
-                        <p style="float: right; margin: auto 10px; font-size: 15px; font-weight: bold; color: green">
-                            Expected Return: {{ advertisement.expected_return }}</p>
-                        <p style="float: right; margin: auto 10px; font-size: 15px; font-weight: bold; color: red">
-                            Expected Risk: {{ advertisement.expected_risk }}</p>
-                        <p style="float: right; margin: auto 10px; font-size: 15px; font-weight: bold">
-                            {% if advertisement.start_date %}
-                                {{ advertisement.start_date }}
-                            {% endif %}
-                            {% if advertisement.close_date %}
-                                to {{ advertisement.close_date }}
-                            {% endif %}</p>
-                    </div>
+                list-group table-of-contents" style="margin-top: 10px; padding: 3px">
+                <div style="display: flex; justify-content: space-between; flex-direction: column">
+                    <p style="float: right; margin: auto 10px; font-size: 20px; font-weight: bold;">{{ advertisement.title }}</p>
+                    <p style="float: right; margin: auto 10px; font-size: 15px; font-weight: bold;">
+                        expert: {{ advertisement.user_id }}</p>
+                    <p style="float: right; margin: auto 10px; font-size: 15px; font-weight: bold;">
+                        symbol: {{ advertisement.symbol }}</p>
+                    <p style="float: right; margin: auto 10px; font-size: 15px; font-weight: bold; color: green">
+                        Expected Return: {{ advertisement.expected_return }}</p>
+                    <p style="float: right; margin: auto 10px; font-size: 15px; font-weight: bold; color: red">
+                        Expected Risk: {{ advertisement.expected_risk }}</p>
+                    <p style="float: right; margin: auto 10px; font-size: 15px; font-weight: bold">
+                        {% if advertisement.start_date %}
+                            {{ advertisement.start_date }}
+                        {% endif %}
+                        {% if advertisement.close_date %}
+                            to {{ advertisement.close_date }}
+                        {% endif %}</p>
                 </div>
             </div>
         </div>
+        <div class="row">
+            <div class="col-xs-10 col-md-8 col-lg-8 col-sm-8 offset-xs-1 offset-md-2 offset-lg-2 offset-sm-2 the-box
+                list-group table-of-contents">
+                <canvas id="myChart" width="10" height="10"></canvas>
+
+                <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
+                <script type="text/javascript" src="{% static 'js/Chart.min.js' %}"></script>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/0.6.6/chartjs-plugin-zoom.js"></script>
+                <script type="text/javascript">
+                    $.get('{% url "chart" advertisement.symbol.name advertisement.id %}', function (data) {
+                        var ctx = $("#myChart").get(0).getContext("2d");
+                        data.datasets[0]['borderColor'] = "rgba(32,87,13,0)";
+                        data.datasets[0]['pointBackgroundColor'] = "#3dc11a";
+                        data.datasets[0]['pointBorderColor'] = "#3dc11a";
+                        data.datasets[0]['backgroundColor'] = "rgba(61,193,26,0)";
+                        data.datasets[1]['pointBorderColor'] = "#830800";
+                        data.datasets[1]['backgroundColor'] = "rgba(61,193,26,0)";
+                        data.datasets[2]['borderColor'] = "#0076ff";
+                        data.datasets[2]['pointRadius'] = 1.5;
+                        data.datasets[2]['pointBackgroundColor'] = "#0076ff";
+                        data.datasets[2]['pointBorderColor'] = "#0076ff";
+                        data.datasets[2]['backgroundColor'] = "rgba(0,50,240,0.4)";
+                        data.datasets[3]['borderColor'] = "#b2bb00";
+                        data.datasets[3]['pointRadius'] = 1.5;
+                        data.datasets[3]['pointBackgroundColor'] = "#b2bb00";
+                        data.datasets[3]['pointBorderColor'] = "#b2bb00";
+                        data.datasets[3]['backgroundColor'] = "rgba(238,240,0,0.34)";
+                        data.datasets[4]['borderColor'] = "#434343";
+                        data.datasets[4]['pointRadius'] = 1.5;
+                        data.datasets[4]['pointBackgroundColor'] = "#434343";
+                        data.datasets[4]['pointBorderColor'] = "#434343";
+                        data.datasets[4]['backgroundColor'] = "rgba(75,75,75,0.5)";
+                        new Chart(ctx, {
+                            type: 'line',
+                            data: data,
+                            options: {
+                                responsive: true,
+                                scales: {
+                                    xAxes: [{
+                                        type: 'time',
+                                        distribution: 'linear',
+                                        unit: 'day',
+                                        bounds: 'data',
+                                        ticks: {maxRotation: 0}
+                                    }]
+                                },
+                                pan: {
+                                    enabled: true,
+                                    mode: "x",
+                                    speed: 10,
+                                    threshold: 10
+                                },
+                                zoom: {
+                                    enabled: true,
+                                    drag: false,
+                                    mode: "x",
+                                    limits: {
+                                        max: 10,
+                                        min: 0.5
+                                    }
+                                },
+                                legend: {
+                                    labels: {
+                                        filter: function (item, chart) {
+                                            // Logic to remove a particular legend item goes here
+                                            return !item.text.includes('Dates');
+                                        }
+                                    }
+                                }
+                            },
+                        });
+                    });
+                </script>
+            </div>
+        </div>
     </div>
-</div>
-<div style="width: 700px; height: 30px">
-    <canvas id="myChart" width="10" height="10"></canvas>
-
-    <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
-    <script type="text/javascript" src="{% static 'js/Chart.min.js' %}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/0.6.6/chartjs-plugin-zoom.js"></script>
-    <script type="text/javascript">
-        $.get('{% url "chart" advertisement.symbol.name advertisement.id %}', function (data) {
-            var ctx = $("#myChart").get(0).getContext("2d");
-            data.datasets[0]['borderColor'] = "rgba(32,87,13,0)";
-            data.datasets[0]['pointBackgroundColor'] = "#3dc11a";
-            data.datasets[0]['pointBorderColor'] = "#3dc11a";
-            data.datasets[0]['backgroundColor'] = "rgba(61,193,26,0)";
-            data.datasets[1]['pointBorderColor'] = "#830800";
-            data.datasets[1]['backgroundColor'] = "rgba(61,193,26,0)";
-            data.datasets[2]['borderColor'] = "#0076ff";
-            data.datasets[2]['pointRadius'] = 1.5;
-            data.datasets[2]['pointBackgroundColor'] = "#0076ff";
-            data.datasets[2]['pointBorderColor'] = "#0076ff";
-            data.datasets[2]['backgroundColor'] = "rgba(0,50,240,0.4)";
-            data.datasets[3]['borderColor'] = "#b2bb00";
-            data.datasets[3]['pointRadius'] = 1.5;
-            data.datasets[3]['pointBackgroundColor'] = "#b2bb00";
-            data.datasets[3]['pointBorderColor'] = "#b2bb00";
-            data.datasets[3]['backgroundColor'] = "rgba(238,240,0,0.34)";
-            data.datasets[4]['borderColor'] = "#434343";
-            data.datasets[4]['pointRadius'] = 1.5;
-            data.datasets[4]['pointBackgroundColor'] = "#434343";
-            data.datasets[4]['pointBorderColor'] = "#434343";
-            data.datasets[4]['backgroundColor'] = "rgba(75,75,75,0.5)";
-            new Chart(ctx, {
-                type: 'line',
-                data: data,
-                options: {
-                    responsive: true,
-                    scales: {
-                        xAxes: [{
-                            type: 'time',
-                            distribution: 'linear',
-                            unit: 'day',
-                            bounds: 'data',
-                            ticks: {maxRotation: 0}
-                        }]
-                    },
-                    pan: {
-                        enabled: true,
-                        mode: "x",
-                        speed: 10,
-                        threshold: 10
-                    },
-                    zoom: {
-                        enabled: true,
-                        drag: false,
-                        mode: "x",
-                        limits: {
-                            max: 10,
-                            min: 0.5
-                        }
-                    },
-                    legend: {
-                        labels: {
-                            filter: function (item, chart) {
-                                // Logic to remove a particular legend item goes here
-                                return !item.text.includes('Dates');
-                            }
-                        }
-                    }
-                },
-            });
-        });
-
-
-    </script>
-</div>
-</body>
-</html>
+{% endblock %}
