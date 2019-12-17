@@ -1,40 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
-    {% load staticfiles %}
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <meta HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
+{% load staticfiles %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
 
-        <title>Fox Assistant | Symbol Details</title>
-        <link rel="stylesheet" href="{% static 'ad_detail_style.css' %}">
+    <title>Fox Assistant | Symbol Details</title>
+    <link rel="stylesheet" href="{% static 'ad_detail_style.css' %}">
 
-    </head>
+</head>
 
-    <body style="text-align: -webkit-center">
-        <h2 style="text-align: center; color: black">{{ symbol.name }}</h2>
-        <div style="width: 700px; height: 30px;">
-            <canvas id="myChart" width="10" height="10"></canvas>
+<body style="text-align: -webkit-center">
+<h2 style="text-align: center; color: black">{{ symbol.name }}</h2>
+<div style="width: 700px; height: 30px;">
+    <canvas id="myChart" width="10" height="10"></canvas>
 
-            <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
-            <script type="text/javascript" src="{% static 'js/Chart.min.js' %}"></script>
-            <script type="text/javascript">
-                $.get('{% url "symbol_chart" symbol.name %}', function (data) {
-                    var ctx = $("#myChart").get(0).getContext("2d");
-                    new Chart(ctx, {
-                        type: 'line',
-                        data: {
-                            labels: data.labels,
-                            datasets: [{
-                                label: data.datasets[0].label,
-                                data: data.datasets[0].data,
-                                borderColor: "#434343",
-                                pointRadius: 1.5
-                            }]
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
+    <script type="text/javascript" src="{% static 'js/Chart.min.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/0.6.6/chartjs-plugin-zoom.js"></script>
+    <script type="text/javascript">
+        $.get('{% url "symbol_chart" symbol.name %}', function (data) {
+            var ctx = $("#myChart").get(0).getContext("2d");
+            data.datasets[0]['borderColor'] = "#434343";
+            data.datasets[0]['pointRadius'] = 1.5;
+            data.datasets[0]['pointBackgroundColor'] = "#434343";
+            data.datasets[0]['pointBorderColor'] = "#434343";
+            data.datasets[0]['backgroundColor'] = "rgba(75,75,75,0.5)";
+            new Chart(ctx, {
+                type: 'line',
+                data: data,
+                options: {
+                    responsive: true,
+                    scales: {
+                        xAxes: [{
+                            type: 'time',
+                            distribution: 'linear',
+                            unit: 'day',
+                            bounds: 'data',
+                            ticks: {maxRotation: 0}
+                        }]
+                    },
+                    pan: {
+                        enabled: true,
+                        mode: "x",
+                        speed: 10,
+                        threshold: 10
+                    },
+                    zoom: {
+                        enabled: true,
+                        drag: false,
+                        mode: "x",
+                        limits: {
+                            max: 10,
+                            min: 0.5
                         }
-                    });
-                });
-            </script>
-        </div>
-    </body>
+                    },
+                    legend: {
+                        display: false
+                    }
+                },
+            });
+        });
+    </script>
+</div>
+</body>
 </html>

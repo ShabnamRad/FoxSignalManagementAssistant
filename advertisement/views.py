@@ -1,12 +1,9 @@
-import symbol
-
 from django.core.mail import EmailMessage
 from django.db.models import Q
 from django.http import Http404, HttpResponse
 from django.shortcuts import render, redirect
 from django.template.loader import render_to_string
 from chartjs.views.lines import BaseLineChartView
-from django.utils.datetime_safe import strftime
 
 from advertisement.models import Signal, Member, Expert, Symbol, ResetPassword
 from advertisement.utils import send_email_async
@@ -62,7 +59,7 @@ def add_expert(request):
         form.user = request.user
         if form.is_valid():
             form.save()
-            return redirect('dashboard')
+            return redirect('profile')
         else:
             return render(request, '../templates/add_expert.html', {'form': form})
 
@@ -99,7 +96,7 @@ def login_view(request):
         user = authenticate(request, username=form['username'].value(), password=form['password'].value())
         if user is not None:
             login(request, user)
-            return redirect('dashboard')
+            return redirect('profile')
         else:
             return render(request, '../templates/login.html', {'form': form})
 
@@ -117,7 +114,7 @@ def register(request):
         form = RegisterForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('dashboard')
+            return redirect('profile')
         else:
             return render(request, '../templates/register.html', {'form': form})
 
@@ -202,7 +199,7 @@ class LineChartJsonView(BaseLineChartView):
 class SymbolChartJsonView(BaseLineChartView):
     def get_labels(self):
         arr = stock_data[symbols[self.kwargs['symbol']]]
-        return [strftime(x[0], '%Y-%m') for x in arr]
+        return [x[0] for x in arr]
 
     def get_providers(self):
         return ['Price']

@@ -18,7 +18,7 @@ Symbols
                 list-group table-of-contents" style="margin-top: 30px">
             {% for symbol in symbols %}
                 <div class="list-group-item" onclick="" style="text-align: right">
-                    <a href={% url 'symbol_detail' symbol.name %}>{{ symbol.name }}</a>
+                    <a style="color: black" href={% url 'symbol_detail' symbol.name %}>{{ symbol.name }}</a>
                 </div>
             {% endfor %}
         </div>

@@ -51,13 +51,12 @@
     <script type="text/javascript">
         $.get('{% url "chart" advertisement.symbol.name advertisement.id %}', function (data) {
             var ctx = $("#myChart").get(0).getContext("2d");
-            data.datasets[0]['borderColor'] = "#20570d";
-            data.datasets[0]['pointRadius'] = 3;
+            data.datasets[0]['borderColor'] = "rgba(32,87,13,0)";
             data.datasets[0]['pointBackgroundColor'] = "#3dc11a";
             data.datasets[0]['pointBorderColor'] = "#3dc11a";
-            data.datasets[0]['backgroundColor'] = "rgba(61,193,26,0.5)";
-            data.datasets[1]['pointRadius'] = 3;
+            data.datasets[0]['backgroundColor'] = "rgba(61,193,26,0)";
             data.datasets[1]['pointBorderColor'] = "#830800";
+            data.datasets[1]['backgroundColor'] = "rgba(61,193,26,0)";
             data.datasets[2]['borderColor'] = "#0076ff";
             data.datasets[2]['pointRadius'] = 1.5;
             data.datasets[2]['pointBackgroundColor'] = "#0076ff";
