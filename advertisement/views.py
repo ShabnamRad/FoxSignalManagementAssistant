@@ -16,7 +16,7 @@ from django.contrib.auth import authenticate, login, logout
 def search(request):
     if request.method == 'GET':
         form = SearchForm()
-        ads = Signal.objects.all()[:100]
+        ads = Signal.objects.all().order_by('-expert__raw_score')[:200]
         return render(request, '../templates/search.html', {
             'ads': ads,
             'form': form
@@ -161,22 +161,31 @@ def change_password(request):
 
 
 class LineChartJsonView(BaseLineChartView):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.other_signals = None
+
     def get_labels(self):
         arr = stock_data[symbols[self.kwargs['symbol']]]
         return [x[0] for x in arr]
 
     def get_providers(self):
-        return ['Buying Dates', 'Selling Dates', 'This Very Signal', 'Other Signals', 'Price']
+        providers = ['Other Signals'] * len(self.other_signals)
+        providers.insert(0, 'This Very Signal')
+        providers.insert(0, 'Selling Dates')
+        providers.insert(0, 'Buying Dates')
+        providers.append('Price')
+        return providers
 
     def get_data(self):
+        sig = Signal.objects.get(id=self.kwargs['ad'])
+        other_signals = Signal.objects.filter(expert=sig.expert, symbol=sig.symbol).exclude(id=self.kwargs['ad']).order_by('start_date').values_list('start_date', 'close_date')
+        self.other_signals = other_signals
         price_arr = stock_data[symbols[self.kwargs['symbol']]]
         signal_arr = [None for x in price_arr]
-        other_signals_arr = [None for x in price_arr]
+        other_signals_arr = [[None for x in price_arr]] * len(other_signals)
         buy_arr = [None for x in price_arr]
         sell_arr = [None for x in price_arr]
-        sig = Signal.objects.get(id=self.kwargs['ad'])
-
-        other_signals = Signal.objects.filter(expert=sig.expert, symbol=sig.symbol).exclude(id=self.kwargs['ad']).order_by('start_date').values_list('start_date', 'close_date')
 
         for i, x in enumerate(price_arr):
             if sig.start_date <= x[0].date() <= sig.close_date:
@@ -185,15 +194,19 @@ class LineChartJsonView(BaseLineChartView):
                     buy_arr[i] = x[1]
                 if x[0].date() == sig.close_date or i == len(price_arr)-1 or price_arr[i+1][0].date() > sig.close_date:
                     sell_arr[i] = x[1]
-            for start, close in other_signals:
+            for j, (start, close) in enumerate(other_signals):
                 if start <= x[0].date() <= close:
-                    other_signals_arr[i] = x[1]
+                    other_signals_arr[j][i] = x[1]
                     if x[0].date() == start or i == 0 or price_arr[i-1][0].date() < start:
                         buy_arr[i] = x[1]
                     if x[0].date() == close or i == len(price_arr)-1 or price_arr[i+1][0].date() > close:
                         sell_arr[i] = x[1]
-                    break
-        return [buy_arr, sell_arr, signal_arr, other_signals_arr, [x[1] for x in price_arr]]
+        res = [x for x in other_signals_arr]
+        res.insert(0, signal_arr)
+        res.insert(0, sell_arr)
+        res.insert(0, buy_arr)
+        res.append([x[1] for x in price_arr])
+        return res
 
 
 class SymbolChartJsonView(BaseLineChartView):
@@ -232,12 +245,18 @@ def symbol_detail(request, symbol_name):
 def expert_page(request, expert_id):
     expert = Expert.objects.get(id=expert_id)
     ads = Signal.objects.filter(expert=expert).select_related('symbol')
+    failure = len(ads.filter(is_succeeded=False))
+    success = len(ads) - failure
+    score = expert.score
 
     securities = set(ads.values_list('symbol__id', 'symbol__name'))
     return render(request, '../templates/expert_page.html', {
         'expert': expert,
         'ads': ads,
         'securities': securities,
+        'score': score,
+        'failure': failure,
+        'success': success
     })
 
 

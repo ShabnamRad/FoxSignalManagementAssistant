@@ -53,7 +53,7 @@ class AddSignalForm(ModelForm):
 class AddExpertForm(ModelForm):
     class Meta:
         model = Expert
-        exclude = ['score', 'normalized_score']
+        exclude = ['raw_score']
 
     def __init__(self, *args, **kwargs):
         super(AddExpertForm, self).__init__(*args, **kwargs)

@@ -54,17 +54,23 @@ class Expert(models.Model):
     first_name = models.CharField(max_length=80)
     last_name = models.CharField(max_length=80)
     website = models.URLField(max_length=200, null=True)
-    score = models.FloatField(default=1)
-    normalized_score = models.FloatField(default=1)
+    raw_score = models.FloatField(default=1)
 
     def __str__(self):
         return self.display_name
 
-    def save(self, *args, **kwargs):
-        max_score = Expert.objects.all().aggregate(Max('score'))['score__max']
-        min_score = Expert.objects.all().aggregate(Min('score'))['score__min']
-        self.normalized_score = (self.score - min_score) / (max_score - min_score)
-        super(Expert, self).save(*args, **kwargs)
+    @property
+    def score(self):
+        ads = Signal.objects.filter(expert=self).select_related('symbol')
+        failure = len(ads.filter(is_succeeded=False))
+        self.raw_score = 1 - (failure / (len(ads) + 1))
+        self.save()
+        max_score = Expert.objects.all().aggregate(Max('raw_score'))['raw_score__max']
+        min_score = Expert.objects.all().aggregate(Min('raw_score'))['raw_score__min']
+        if max_score == min_score:
+            return 100
+        normalized_score = (self.raw_score - min_score) / (max_score - min_score)
+        return int(normalized_score*100)
 
 
 class Symbol(models.Model):

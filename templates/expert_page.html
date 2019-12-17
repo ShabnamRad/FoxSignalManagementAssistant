@@ -67,9 +67,13 @@
 
                     </script>
                     <h1 style="display: flex; flex-grow: 1; justify-content: space-between">
-                        <p style="float: left; margin: auto 10px; font-size: 18px; font-weight: bold; font-style: italic; color: goldenrod">
-                            Score: {% widthratio expert.normalized_score 1 100 %}</p>
-                        <h1 style="float: right">{{ expert.display_name }}</h1>
+                        <p style="float: left; margin: auto; font-size: 13px; font-weight: bolder; font-style: italic; color: goldenrod">
+                            Score: {{ score }}</p>
+                        <p style="float: left; margin: auto; font-size: 13px; font-weight: bolder; font-style: italic; color: green">
+                            T: {{ success }}</p>
+                        <p style="float: left; margin: auto; font-size: 13px; font-weight: bolder; font-style: italic; color: red">
+                            F: {{ failure }}</p>
+                        <h1 style="float: right; font-size: 15px">{{ expert.display_name }}</h1>
                     </h1>
                 </div>
 
