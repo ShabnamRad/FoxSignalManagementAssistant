@@ -169,7 +169,7 @@ class LineChartJsonView(BaseLineChartView):
         return [x[0] for x in arr]
 
     def get_providers(self):
-        return ['Buying Dates', 'Selling Dates', 'Other Signals', 'This Very Signal', 'Price']
+        return ['Buying Dates', 'Selling Dates', 'This Very Signal', 'Other Signals', 'Price']
 
     def get_data(self):
         price_arr = stock_data[symbols[self.kwargs['symbol']]]
@@ -182,18 +182,18 @@ class LineChartJsonView(BaseLineChartView):
         other_signals = Signal.objects.filter(expert=sig.expert, symbol=sig.symbol).exclude(id=self.kwargs['ad']).order_by('start_date').values_list('start_date', 'close_date')
 
         for i, x in enumerate(price_arr):
-            if x[0].date() >= sig.start_date and x[0].date() <= sig.close_date:
+            if sig.start_date <= x[0].date() <= sig.close_date:
                 signal_arr[i] = x[1]
                 if x[0].date() == sig.start_date or i == 0 or price_arr[i-1][0].date() < sig.start_date:
                     buy_arr[i] = x[1]
-                if x[0].date() == sig.close_date or i == len(price_arr) or price_arr[i+1][0].date() > sig.close_date:
+                if x[0].date() == sig.close_date or i == len(price_arr)-1 or price_arr[i+1][0].date() > sig.close_date:
                     sell_arr[i] = x[1]
             for start, close in other_signals:
-                if x[0].date() >= start and x[0].date() <= close:
+                if start <= x[0].date() <= close:
                     other_signals_arr[i] = x[1]
                     if x[0].date() == start or i == 0 or price_arr[i-1][0].date() < start:
                         buy_arr[i] = x[1]
-                    if x[0].date() == close  or i == len(price_arr) or price_arr[i+1][0].date() > close:
+                    if x[0].date() == close or i == len(price_arr)-1 or price_arr[i+1][0].date() > close:
                         sell_arr[i] = x[1]
                     break
         return [buy_arr, sell_arr, signal_arr, other_signals_arr, [x[1] for x in price_arr]]
