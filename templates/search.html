@@ -42,7 +42,7 @@ Searching Signals
                         <div style="float: left; flex-grow: 1" class="search-res">
                             <h3 style="text-align: right"><a style="color: black" href={% url 'advertisement_detail' ad.id %}>{{ ad.title }}</a></h3>
                             <h6><a style="color: black" href={% url 'expert_page' ad.expert.id %}>expert: {{ ad.user_id }}</a></h6>
-                            <h6>symbol: {{ ad.symbol }}</h6>
+                            <h6><a style="color: black" href={% url 'symbol_detail' ad.symbol.name %}>symbol: {{ ad.symbol }}</a></h6>
                             <h6><a style="color: #6e6e6e" href={% url 'advertisement_detail' ad.id %}>See more</a></h6>
                         </div>
                         <p style="float: right; margin: auto 10px; font-size: 25px; font-weight: bold; color: green">{{ ad.expected_return }}</p>
