@@ -50,9 +50,30 @@
                 <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/0.6.6/chartjs-plugin-zoom.js"></script>
                 <script type="text/javascript">
                     $.get('{% url "chart" advertisement.id %}', function (data) {
+                        function is_successful(signal_arr) {
+                            let ind = 0;
+                            let start_value = 0;
+                            let close_value = 0;
+                            while (ind < signal_arr.length) {
+                                if (signal_arr[ind]) {
+                                    start_value = signal_arr[ind];
+                                    break
+                                }
+                                ind += 1;
+                            }
+                            ind = signal_arr.length;
+                            while (ind >= 0) {
+                                if (signal_arr[ind]) {
+                                    close_value = signal_arr[ind];
+                                    break
+                                }
+                                ind -= 1;
+                            }
+                            return close_value > start_value
+                        }
                         let ctx = $("#myChart").get(0).getContext("2d");
                         let l = data.datasets.length;
-                        data.datasets[0]['borderColor'] = "rgba(32,87,13,0)";
+                        data.datasets[0]['borderColor'] = "#349c1a";
                         data.datasets[0]['pointBackgroundColor'] = "#3dc11a";
                         data.datasets[0]['pointBorderColor'] = "#3dc11a";
                         data.datasets[0]['backgroundColor'] = "rgba(61,193,26,0)";
@@ -65,12 +86,19 @@
                         data.datasets[2]['backgroundColor'] = "rgba(0,50,240,0.4)";
                         var i = 3;
                         while (i < l-1) {
-                            let success_color = "#b2bb00";
+                            data.datasets[i]['backgroundColor'] = "rgba(238,240,0,0.34)";
+                            var success_color = "#b2bb00";
+                            if(is_successful(data.datasets[i].data)) {
+                                success_color = "#257a0f";
+                                data.datasets[i]['backgroundColor'] = "rgba(61,193,26,0.41)"; }
+                            else {
+                                success_color = "#830800";
+                                data.datasets[i]['backgroundColor'] = "rgba(202,10,0,0.34)"; }
                             data.datasets[i]['borderColor'] = success_color;
                             data.datasets[i]['pointRadius'] = 1.5;
                             data.datasets[i]['pointBackgroundColor'] = success_color;
                             data.datasets[i]['pointBorderColor'] = success_color;
-                            data.datasets[i]['backgroundColor'] = "rgba(238,240,0,0.34)";
+
                             i += 1;
                         }
                         data.datasets[l-1]['borderColor'] = "#434343";
@@ -111,7 +139,7 @@
                                     labels: {
                                         filter: function (item, chart) {
                                             // Logic to remove a particular legend item goes here
-                                            return !item.text.includes('Dates');
+                                            return !item.text.includes('Other');
                                         }
                                     }
                                 }

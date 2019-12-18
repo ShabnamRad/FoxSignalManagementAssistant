@@ -30,6 +30,6 @@ def readfile(filename):
     data = data[1:]
     for row in data:
         d = date(row[0])
-        if d.year >= 2018 or (d.year == 2016 and d.month >= 5):
+        if d.year >= 2017 or (d.year == 2016 and d.month >= 5):
             stock_data[filename[:-4]].append((d, int(float(row[3]))))
     stock_data[filename[:-4]].reverse()
