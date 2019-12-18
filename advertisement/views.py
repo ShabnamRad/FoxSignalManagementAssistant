@@ -179,27 +179,28 @@ class LineChartJsonView(BaseLineChartView):
 
     def get_data(self):
         sig = Signal.objects.get(id=self.kwargs['ad'])
-        other_signals = Signal.objects.filter(expert=sig.expert, symbol=sig.symbol).exclude(id=self.kwargs['ad']).order_by('start_date').values_list('start_date', 'close_date')
+        other_signals = Signal.objects.filter(expert=sig.expert, symbol=sig.symbol).exclude(
+            id=self.kwargs['ad']).order_by('start_date').values_list('start_date', 'close_date')
         self.other_signals = other_signals
         price_arr = stock_data[symbols[self.kwargs['symbol']]]
         signal_arr = [None for x in price_arr]
-        other_signals_arr = [[None for x in price_arr]] * len(other_signals)
+        other_signals_arr = [[None for x in price_arr] for i in range(len(other_signals))]
         buy_arr = [None for x in price_arr]
         sell_arr = [None for x in price_arr]
 
         for i, x in enumerate(price_arr):
             if sig.start_date <= x[0].date() <= sig.close_date:
                 signal_arr[i] = x[1]
-                if x[0].date() == sig.start_date or i == 0 or price_arr[i-1][0].date() < sig.start_date:
+                if x[0].date() == sig.start_date or i == 0 or price_arr[i - 1][0].date() < sig.start_date:
                     buy_arr[i] = x[1]
-                if x[0].date() == sig.close_date or i == len(price_arr)-1 or price_arr[i+1][0].date() > sig.close_date:
+                if x[0].date() == sig.close_date or i == len(price_arr) - 1 or price_arr[i + 1][0].date() > sig.close_date:
                     sell_arr[i] = x[1]
             for j, (start, close) in enumerate(other_signals):
                 if start <= x[0].date() <= close:
                     other_signals_arr[j][i] = x[1]
-                    if x[0].date() == start or i == 0 or price_arr[i-1][0].date() < start:
+                    if x[0].date() == start or i == 0 or price_arr[i - 1][0].date() < start:
                         buy_arr[i] = x[1]
-                    if x[0].date() == close or i == len(price_arr)-1 or price_arr[i+1][0].date() > close:
+                    if x[0].date() == close or i == len(price_arr) - 1 or price_arr[i + 1][0].date() > close:
                         sell_arr[i] = x[1]
         res = [x for x in other_signals_arr]
         res.insert(0, signal_arr)
@@ -235,8 +236,10 @@ def advertisement_detail(request, advertisement_id):
 def symbol_detail(request, symbol_name):
     try:
         symbol_obj = Symbol.objects.get(name=symbol_name)
+        ads = Signal.objects.filter(symbol=symbol_obj).order_by('-start_date')
         return render(request, '../templates/symbol_detail.html', {
-            'symbol': symbol_obj
+            'symbol': symbol_obj,
+            'ads': ads
         })
     except Symbol.DoesNotExist:
         raise Http404("Question does not exist")
