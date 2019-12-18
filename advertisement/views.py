@@ -166,12 +166,12 @@ class LineChartJsonView(BaseLineChartView):
         self.other_signals = None
 
     def get_labels(self):
-        arr = stock_data[symbols[self.kwargs['symbol']]]
+        arr = stock_data[symbols[Signal.objects.get(id=self.kwargs['ad']).symbol.name]]
         return [x[0] for x in arr]
 
     def get_providers(self):
         providers = ['Other Signals'] * len(self.other_signals)
-        providers.insert(0, 'This Very Signal')
+        providers.insert(0, 'Signal')
         providers.insert(0, 'Selling Dates')
         providers.insert(0, 'Buying Dates')
         providers.append('Price')
@@ -181,7 +181,7 @@ class LineChartJsonView(BaseLineChartView):
         sig = Signal.objects.get(id=self.kwargs['ad'])
         other_signals = Signal.objects.filter(expert=sig.expert, symbol=sig.symbol).exclude(id=self.kwargs['ad']).order_by('start_date').values_list('start_date', 'close_date')
         self.other_signals = other_signals
-        price_arr = stock_data[symbols[self.kwargs['symbol']]]
+        price_arr = stock_data[symbols[sig.symbol.name]]
         signal_arr = [None for x in price_arr]
         other_signals_arr = [[None for x in price_arr]] * len(other_signals)
         buy_arr = [None for x in price_arr]
@@ -249,9 +249,13 @@ def expert_page(request, expert_id):
     success = len(ads) - failure
     score = expert.score
 
+    symbols = set(ads.values_list('symbol__name', flat=True))
+    ads_chart = [Signal.objects.filter(expert=expert, symbol__name=sname).latest('id') for sname in symbols]
+
     securities = set(ads.values_list('symbol__id', 'symbol__name'))
     return render(request, '../templates/expert_page.html', {
         'expert': expert,
+        'ads_chart': ads_chart,
         'ads': ads,
         'securities': securities,
         'score': score,

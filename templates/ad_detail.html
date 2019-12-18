@@ -49,7 +49,7 @@
                 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
                 <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/0.6.6/chartjs-plugin-zoom.js"></script>
                 <script type="text/javascript">
-                    $.get('{% url "chart" advertisement.symbol.name advertisement.id %}', function (data) {
+                    $.get('{% url "chart" advertisement.id %}', function (data) {
                         let ctx = $("#myChart").get(0).getContext("2d");
                         let l = data.datasets.length;
                         data.datasets[0]['borderColor'] = "rgba(32,87,13,0)";

@@ -76,6 +76,26 @@
                         <h1 style="float: right; font-size: 15px">{{ expert.display_name }}</h1>
                     </h1>
                 </div>
+                        <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
+                        <script type="text/javascript" src="{% static 'js/Chart.min.js' %}"></script>
+                        <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+                        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
+                        <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/0.6.6/chartjs-plugin-zoom.js"></script>
+                <div class="row">
+                {% for ad in ads_chart %}
+                <div class="col-sm-4">
+                                <canvas id="myChart-{{forloop.counter}}" width="5" height="5"></canvas>
+                </div>
+                {% endfor %}
+
+
+                </div>
+                <div class="row">
+                    <div style="margin-bottom: 10px" class="col-xs-4 col-md-4 col-lg-4 col-sm-4 offset-xs-4 offset-md-4 offset-lg-4 offset-sm-4">
+                    <button id="prevPage"> Previous Page </button>
+                    <button id="nextPage"> Next Page </button>
+                        </div>
+                   </div>
 
                 <!--            <div class="list-group-item" onclick="">-->
                 <!--                <div style="display: flex; justify-content: space-between">-->
@@ -114,4 +134,122 @@
             </div>
         </div>
     </div>
+
+    <input type="hidden" id="pageNo" value="1">
+
+    {% for ad in ads_chart %}
+        <script type="text/javascript">
+                            $.get('{% url "chart" ad.id %}', function (data) {
+                                let ctx = $("#myChart-{{forloop.counter}}").get(0).getContext("2d");
+                                let l = data.datasets.length;
+                                data.datasets[0]['borderColor'] = "rgba(32,87,13,0)";
+                                data.datasets[0]['pointBackgroundColor'] = "#3dc11a";
+                                data.datasets[0]['pointBorderColor'] = "#3dc11a";
+                                data.datasets[0]['backgroundColor'] = "rgba(61,193,26,0)";
+                                data.datasets[1]['pointBorderColor'] = "#830800";
+                                data.datasets[1]['backgroundColor'] = "rgba(61,193,26,0)";
+                                data.datasets[2]['borderColor'] = "#0076ff";
+                                data.datasets[2]['pointRadius'] = 1.5;
+                                data.datasets[2]['pointBackgroundColor'] = "#0076ff";
+                                data.datasets[2]['pointBorderColor'] = "#0076ff";
+                                data.datasets[2]['backgroundColor'] = "rgba(0,50,240,0.4)";
+                                var i = 3;
+                                while (i < l-1) {
+                                    let success_color = "#b2bb00";
+                                    data.datasets[i]['borderColor'] = success_color;
+                                    data.datasets[i]['pointRadius'] = 1.5;
+                                    data.datasets[i]['pointBackgroundColor'] = success_color;
+                                    data.datasets[i]['pointBorderColor'] = success_color;
+                                    data.datasets[i]['backgroundColor'] = "rgba(238,240,0,0.34)";
+                                    i += 1;
+                                }
+                                data.datasets[l-1]['borderColor'] = "#434343";
+                                data.datasets[l-1]['pointRadius'] = 1.5;
+                                data.datasets[l-1]['pointBackgroundColor'] = "#434343";
+                                data.datasets[l-1]['pointBorderColor'] = "#434343";
+                                data.datasets[l-1]['backgroundColor'] = "rgba(75,75,75,0.5)";
+                                new Chart(ctx, {
+                                    type: 'line',
+                                    data: data,
+                                    options: {
+                                        responsive: true,
+                                        scales: {
+                                            xAxes: [{
+                                                type: 'time',
+                                                distribution: 'linear',
+                                                unit: 'day',
+                                                bounds: 'data',
+                                                ticks: {maxRotation: 0}
+                                            }]
+                                        },
+                                        pan: {
+                                            enabled: true,
+                                            mode: "x",
+                                            speed: 10,
+                                            threshold: 10
+                                        },
+                                        zoom: {
+                                            enabled: true,
+                                            drag: false,
+                                            mode: "x",
+                                            limits: {
+                                                max: 10,
+                                                min: 0.5
+                                            }
+                                        },
+                                        legend: {
+                                            labels: {
+                                                filter: function (item, chart) {
+                                                    // Logic to remove a particular legend item goes here
+                                                    return !item.text.includes('Other') && !item.text.includes('Dates');
+                                                }
+                                            }
+                                        },
+                                        title: {
+                                            display: true,
+                                            text: '{{ad.symbol.name}}'
+                                        }
+                                    },
+                                });
+                            });
+
+                            {% if forloop.counter > 6 %}
+                        $("#myChart-{{forloop.counter}}").hide();
+                    {% endif %}
+
+                        </script>
+    {% endfor %}
+
+    <script>
+        function rerun(){
+            var pageNo = Number($("#pageNo").val());
+            if (pageNo == 1)
+                $("#prevPage").attr("disabled", "disabled");
+            else
+                $("#prevPage").removeAttr("disabled");
+
+            if (pageNo == Math.ceil({{ ads_chart|length }} / 6))
+                $("#nextPage").attr("disabled", "disabled");
+            else
+                $("#nextPage").removeAttr("disabled");
+
+
+            for (var i=1; i<=300; i++){
+                if (i > pageNo * 6 - 6 && i <= pageNo * 6)
+                    $("#myChart-" + i).show();
+                else
+                    $("#myChart-" + i).hide();
+            }
+        }
+
+        rerun();
+        $('#nextPage').on('click', function () {
+            $("#pageNo").val(Number($("#pageNo").val()) + 1);
+            rerun();
+        });
+        $('#prevPage').on('click', function () {
+            $("#pageNo").val(Number($("#pageNo").val()) - 1);
+            rerun();
+        });
+    </script>
 {% endblock %}
