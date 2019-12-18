@@ -140,79 +140,106 @@
     {% for ad in ads_chart %}
         <script type="text/javascript">
                             $.get('{% url "chart" ad.id %}', function (data) {
-                                let ctx = $("#myChart-{{forloop.counter}}").get(0).getContext("2d");
-                                let l = data.datasets.length;
-                                data.datasets[0]['borderColor'] = "rgba(32,87,13,0)";
-                                data.datasets[0]['pointBackgroundColor'] = "#3dc11a";
-                                data.datasets[0]['pointBorderColor'] = "#3dc11a";
-                                data.datasets[0]['backgroundColor'] = "rgba(61,193,26,0)";
-                                data.datasets[1]['pointBorderColor'] = "#830800";
-                                data.datasets[1]['backgroundColor'] = "rgba(61,193,26,0)";
-                                data.datasets[2]['borderColor'] = "#0076ff";
-                                data.datasets[2]['pointRadius'] = 1.5;
-                                data.datasets[2]['pointBackgroundColor'] = "#0076ff";
-                                data.datasets[2]['pointBorderColor'] = "#0076ff";
-                                data.datasets[2]['backgroundColor'] = "rgba(0,50,240,0.4)";
-                                var i = 3;
-                                while (i < l-1) {
-                                    let success_color = "#b2bb00";
-                                    data.datasets[i]['borderColor'] = success_color;
-                                    data.datasets[i]['pointRadius'] = 1.5;
-                                    data.datasets[i]['pointBackgroundColor'] = success_color;
-                                    data.datasets[i]['pointBorderColor'] = success_color;
-                                    data.datasets[i]['backgroundColor'] = "rgba(238,240,0,0.34)";
-                                    i += 1;
+                                                        function is_successful(signal_arr) {
+                            let ind = 0;
+                            let start_value = 0;
+                            let close_value = 0;
+                            while (ind < signal_arr.length) {
+                                if (signal_arr[ind]) {
+                                    start_value = signal_arr[ind];
+                                    break
                                 }
-                                data.datasets[l-1]['borderColor'] = "#434343";
-                                data.datasets[l-1]['pointRadius'] = 1.5;
-                                data.datasets[l-1]['pointBackgroundColor'] = "#434343";
-                                data.datasets[l-1]['pointBorderColor'] = "#434343";
-                                data.datasets[l-1]['backgroundColor'] = "rgba(75,75,75,0.5)";
-                                new Chart(ctx, {
-                                    type: 'line',
-                                    data: data,
-                                    options: {
-                                        responsive: true,
-                                        scales: {
-                                            xAxes: [{
-                                                type: 'time',
-                                                distribution: 'linear',
-                                                unit: 'day',
-                                                bounds: 'data',
-                                                ticks: {maxRotation: 0}
-                                            }]
-                                        },
-                                        pan: {
-                                            enabled: true,
-                                            mode: "x",
-                                            speed: 10,
-                                            threshold: 10
-                                        },
-                                        zoom: {
-                                            enabled: true,
-                                            drag: false,
-                                            mode: "x",
-                                            limits: {
-                                                max: 10,
-                                                min: 0.5
-                                            }
-                                        },
-                                        legend: {
-                                            labels: {
-                                                filter: function (item, chart) {
-                                                    // Logic to remove a particular legend item goes here
-                                                    return !item.text.includes('Other') && !item.text.includes('Dates');
-                                                }
-                                            }
-                                        },
-                                        title: {
-                                            display: true,
-                                            text: '{{ad.symbol.name}}'
-                                        }
-                                    },
-                                });
-                            });
+                                ind += 1;
+                            }
+                            ind = signal_arr.length;
+                            while (ind >= 0) {
+                                if (signal_arr[ind]) {
+                                    close_value = signal_arr[ind];
+                                    break
+                                }
+                                ind -= 1;
+                            }
+                            return close_value > start_value
+                        }
+                        let ctx = $("#myChart-{{forloop.counter}}").get(0).getContext("2d");
+                        let l = data.datasets.length;
+                        data.datasets[0]['borderColor'] = "#349c1a";
+                        data.datasets[0]['pointBackgroundColor'] = "#3dc11a";
+                        data.datasets[0]['pointBorderColor'] = "#3dc11a";
+                        data.datasets[0]['backgroundColor'] = "rgba(61,193,26,0)";
+                        data.datasets[1]['pointBorderColor'] = "#830800";
+                        data.datasets[1]['backgroundColor'] = "rgba(61,193,26,0)";
+                        data.datasets[2]['borderColor'] = "#0076ff";
+                        data.datasets[2]['pointRadius'] = 1.5;
+                        data.datasets[2]['pointBackgroundColor'] = "#0076ff";
+                        data.datasets[2]['pointBorderColor'] = "#0076ff";
+                        data.datasets[2]['backgroundColor'] = "rgba(0,50,240,0.4)";
+                        var i = 3;
+                        while (i < l-1) {
+                            data.datasets[i]['backgroundColor'] = "rgba(238,240,0,0.34)";
+                            var success_color = "#b2bb00";
+                            if(is_successful(data.datasets[i].data)) {
+                                success_color = "#257a0f";
+                                data.datasets[i]['backgroundColor'] = "rgba(61,193,26,0.41)"; }
+                            else {
+                                success_color = "#830800";
+                                data.datasets[i]['backgroundColor'] = "rgba(202,10,0,0.34)"; }
+                            data.datasets[i]['borderColor'] = success_color;
+                            data.datasets[i]['pointRadius'] = 1.5;
+                            data.datasets[i]['pointBackgroundColor'] = success_color;
+                            data.datasets[i]['pointBorderColor'] = success_color;
 
+                            i += 1;
+                        }
+                        data.datasets[l-1]['borderColor'] = "#434343";
+                        data.datasets[l-1]['pointRadius'] = 1.5;
+                        data.datasets[l-1]['pointBackgroundColor'] = "#434343";
+                        data.datasets[l-1]['pointBorderColor'] = "#434343";
+                        data.datasets[l-1]['backgroundColor'] = "rgba(75,75,75,0.5)";
+                        new Chart(ctx, {
+                            type: 'line',
+                            data: data,
+                            options: {
+                                responsive: true,
+                                scales: {
+                                    xAxes: [{
+                                        type: 'time',
+                                        distribution: 'linear',
+                                        unit: 'day',
+                                        bounds: 'data',
+                                        ticks: {maxRotation: 0}
+                                    }]
+                                },
+                                pan: {
+                                    enabled: true,
+                                    mode: "x",
+                                    speed: 10,
+                                    threshold: 10
+                                },
+                                zoom: {
+                                    enabled: true,
+                                    drag: false,
+                                    mode: "x",
+                                    limits: {
+                                        max: 10,
+                                        min: 0.5
+                                    }
+                                },
+                                legend: {
+                                    labels: {
+                                        filter: function (item, chart) {
+                                            // Logic to remove a particular legend item goes here
+                                            return !item.text.includes('Other') && !item.text.includes('Dates');
+                                        }
+                                    }
+                                },
+                                title: {
+                                    display: true,
+                                    text: '{{ad.symbol.name}}'
+                                }
+                            },
+                        });
+                    });
                             {% if forloop.counter > 6 %}
                         $("#myChart-{{forloop.counter}}").hide();
                     {% endif %}
