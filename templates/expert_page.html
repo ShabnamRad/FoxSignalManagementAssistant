@@ -169,12 +169,12 @@
                         data.datasets[0]['backgroundColor'] = "rgba(61,193,26,0)";
                         data.datasets[1]['pointBorderColor'] = "#830800";
                         data.datasets[1]['backgroundColor'] = "rgba(61,193,26,0)";
-                        data.datasets[2]['borderColor'] = "#0076ff";
-                        data.datasets[2]['pointRadius'] = 1.5;
-                        data.datasets[2]['pointBackgroundColor'] = "#0076ff";
-                        data.datasets[2]['pointBorderColor'] = "#0076ff";
-                        data.datasets[2]['backgroundColor'] = "rgba(0,50,240,0.4)";
-                        var i = 3;
+<!--                        data.datasets[2]['borderColor'] = "#0076ff";-->
+<!--                        data.datasets[2]['pointRadius'] = 1.5;-->
+<!--                        data.datasets[2]['pointBackgroundColor'] = "#0076ff";-->
+<!--                        data.datasets[2]['pointBorderColor'] = "#0076ff";-->
+<!--                        data.datasets[2]['backgroundColor'] = "rgba(0,50,240,0.4)";-->
+                        var i = 2;
                         while (i < l-1) {
                             data.datasets[i]['backgroundColor'] = "rgba(238,240,0,0.34)";
                             var success_color = "#b2bb00";
@@ -226,12 +226,7 @@
                                     }
                                 },
                                 legend: {
-                                    labels: {
-                                        filter: function (item, chart) {
-                                            // Logic to remove a particular legend item goes here
-                                            return !item.text.includes('Other') && !item.text.includes('Dates');
-                                        }
-                                    }
+                                    display: false
                                 },
                                 title: {
                                     display: true,
