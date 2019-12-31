@@ -280,21 +280,31 @@ def onfalo(request, expert_id):
 
 
 def expert_aggregate(request):
+    experts = Expert.objects.all()
     if request.method == 'GET':
         ads = Signal.objects.all().order_by('-expert__raw_score')[:200]
         form = ApplyAlgorithmForm
         return render(request, '../templates/expert_aggregation.html', {
             'ads': ads,
-            'form': form
+            'form': form,
+            'experts': experts,
         })
     else:
-        form = ApplyAlgorithmForm(request.POST)
-        if form.is_valid():
-            included_experts = map(lambda x: int(x), form.cleaned_data.get('included_experts'))
-            ads = Signal.objects.filter(expert_id__in=included_experts)
-            return render(request, '../templates/expert_aggregation.html', {
-                'ads': ads,
-                'form': form
-            })
+        experts = list(map(int, request.POST['experts'].split(',')))
+        if 0 in experts:
+            experts = Expert.objects.all()
         else:
-            return render(request, '../templates/expert_aggregation.html', {'ads': [], 'form': form})
+            experts = Expert.objects.filter(id__in=experts)
+
+        return HttpResponse(experts)
+        # form = ApplyAlgorithmForm(request.POST)
+        # if form.is_valid():
+        #     included_experts = map(lambda x: int(x), form.cleaned_data.get('included_experts'))
+        #     ads = Signal.objects.filter(expert_id__in=included_experts)
+        #     return render(request, '../templates/expert_aggregation.html', {
+        #         'ads': ads,
+        #         'form': form,
+        #         'experts': experts,
+        #     })
+        # else:
+        #     return render(request, '../templates/expert_aggregation.html', {'ads': [], 'form': form, 'experts': experts})

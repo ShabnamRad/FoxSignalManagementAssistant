@@ -9,6 +9,12 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="{% static 'style.css' %}?v=1">
     <link rel="icon" href="{% static 'favicon.ico' %}">
+<!--    <link href="{% static 'ac/normalize.css' %}" rel="stylesheet">-->
+    <link href="{% static 'ac/style.css' %}" rel="stylesheet">
+    <link href="{% static 'ac/jquery.magicsearch.css'%}" rel="stylesheet">
+
+    <script src="{% static 'ac/jquery-2.2.3.min.js' %}"></script>
+    <script src="{% static 'ac/jquery.magicsearch.js' %}?v=1"></script>
 {% endblock %}
 
 {% block content %}
@@ -19,13 +25,20 @@
                 <div class="well bs-component">
                     <form method="post" class="form-horizontal">
                         {% csrf_token %}
+                        <input type="hidden" id="experts" name="experts">
                         <fieldset>
                             <legend>Apply Our Aggregation Algorithms!</legend>
                             <div class="form-group col-xs-12 col-sm-12 col-md-12 col-lg-12"
                                  style="display: flex; flex-direction: column;align-items: center;">
-                                <div class="horizontal-items">{{ form.as_p }}</div>
-                                <button type="submit" value="continue"
-                                        onclick="location.href='{% url 'expert_aggregation' %}'"
+                                <div class="horizontal-items">
+                                    <div id="container">
+                                    <div class="adjust"></div>
+                                    <section>
+                                        <input class="magicsearch" id="basic" style="color:black;" placeholder="search names...">
+                                    </section>
+                              </div>
+                                </div>
+                                <button type="submit" id="set-btn"
                                         class="btn btn-default">Apply
                                 </button>
                             </div>
@@ -68,4 +81,39 @@
             </div>
         </div>
     </div>
+                                <script>
+        $(function() {
+            var dataSource = [
+                {% for expert in experts %}
+                    {id: {{ expert.id }}, firstName: '{{ expert.display_name }}' },
+                {% endfor %}
+                    {id: 0, firstName: 'All', lastName: ''}
+            ];
+            $('#basic').magicsearch({
+                dataSource: dataSource,
+                fields: ['firstName'],
+                id: 'id',
+                format: '%firstName%',
+                multiple: true,
+                multiField: 'firstName',
+                multiStyle: {
+                    space: 5,
+                    width: 80
+                }
+            });
+        });
+
+             $('#set-btn').click(function() {
+                   var s = "";
+                   $('.multi-items').children().each(function() {
+                        var x = this.getAttribute('data-id');
+                        if (s.length > 0)
+                            s += ",";
+                        s += x;
+                   });
+                   $('#experts').val(s);
+            });
+
+    </script>
+
 {% endblock %}
