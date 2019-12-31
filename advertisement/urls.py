@@ -10,6 +10,7 @@ urlpatterns = [
     path('add_expert', views.add_expert, name='add_expert'),
     path('symbols', views.symbols_list, name='symbols'),
     path('profile', views.profile, name='profile'),
+    path('expert_aggregation', views.expert_aggregate, name='expert_aggregation'),
     path('<int:advertisement_id>/', views.advertisement_detail, name='advertisement_detail'),
     path('<str:symbol_name>/', views.symbol_detail, name='symbol_detail'),
     path('expert/<int:expert_id>/', views.expert_page, name='expert_page'),

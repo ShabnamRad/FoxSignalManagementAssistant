@@ -9,7 +9,8 @@ from advertisement.models import Signal, Member, Expert, Symbol, ResetPassword
 from advertisement.utils import send_email_async
 from database import symbols
 from main import stock_data
-from .forms import SearchForm, AddSignalForm, LoginForm, ResetPassForm, RegisterForm, AddExpertForm, SubmitPassword
+from .forms import SearchForm, AddSignalForm, LoginForm, ResetPassForm, RegisterForm, AddExpertForm, SubmitPassword, \
+    ApplyAlgorithmForm
 from django.contrib.auth import authenticate, login, logout
 
 
@@ -193,7 +194,8 @@ class LineChartJsonView(BaseLineChartView):
                 signal_arr[i] = x[1]
                 if x[0].date() == sig.start_date or i == 0 or price_arr[i - 1][0].date() < sig.start_date:
                     buy_arr[i] = x[1]
-                if x[0].date() == sig.close_date or i == len(price_arr) - 1 or price_arr[i + 1][0].date() > sig.close_date:
+                if x[0].date() == sig.close_date or i == len(price_arr) - 1 or price_arr[i + 1][
+                    0].date() > sig.close_date:
                     sell_arr[i] = x[1]
             for j, (start, close) in enumerate(other_signals):
                 if start <= x[0].date() <= close:
@@ -249,7 +251,7 @@ def expert_page(request, expert_id):
     expert = Expert.objects.get(id=expert_id)
     ads = Signal.objects.filter(expert=expert).select_related('symbol')
     failure = len(ads.filter(is_succeeded=False))
-    success = len(ads) - failure
+    success = len(ads.filter(is_succeeded=True))
     score = expert.score
 
     symbols = set(ads.values_list('symbol__name', flat=True))
@@ -275,3 +277,24 @@ def falo(request, expert_id):
 def onfalo(request, expert_id):
     request.user.member.followings.remove(expert_id)
     return HttpResponse("OK")
+
+
+def expert_aggregate(request):
+    if request.method == 'GET':
+        ads = Signal.objects.all().order_by('-expert__raw_score')[:200]
+        form = ApplyAlgorithmForm
+        return render(request, '../templates/expert_aggregation.html', {
+            'ads': ads,
+            'form': form
+        })
+    else:
+        form = ApplyAlgorithmForm(request.POST)
+        if form.is_valid():
+            included_experts = map(lambda x: int(x), form.cleaned_data.get('included_experts'))
+            ads = Signal.objects.filter(expert_id__in=included_experts)
+            return render(request, '../templates/expert_aggregation.html', {
+                'ads': ads,
+                'form': form
+            })
+        else:
+            return render(request, '../templates/expert_aggregation.html', {'ads': [], 'form': form})

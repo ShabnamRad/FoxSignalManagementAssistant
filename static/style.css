@@ -89,6 +89,12 @@ legend {
     margin-right: 750px;
 }
 
+.horizontal-items ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
 .google-button {
     border-radius: 100px;
     background-color: #dd4b39;

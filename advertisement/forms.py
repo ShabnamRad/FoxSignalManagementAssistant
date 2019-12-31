@@ -12,6 +12,11 @@ class SearchForm(forms.Form):
                                 attrs={'class': 'form-control', 'placeholder': 'Enter the signal\'s title'}))
 
 
+class ApplyAlgorithmForm(forms.Form):
+    experts = tuple(map(lambda x: (x.id, x.display_name), Expert.objects.all()))
+    included_experts = forms.MultipleChoiceField(label='Experts', widget=forms.CheckboxSelectMultiple, choices=experts)
+
+
 class AddSignalForm(ModelForm):
     class Meta:
         model = Signal
