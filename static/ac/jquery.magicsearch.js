@@ -1,6 +1,15 @@
 'use strict';
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+function _toConsumableArray(arr) {
+    if (Array.isArray(arr)) {
+        for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
+            arr2[i] = arr[i];
+        }
+        return arr2;
+    } else {
+        return Array.from(arr);
+    }
+}
 
 /*!
  * MagicSearch - An input plugin based on jquery
@@ -33,104 +42,104 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     'use strict';
 
     var
-    //separator of format
-    SEPARATOR = '%',
+        //separator of format
+        SEPARATOR = '%',
 
 
-    //default multi style,unit px
-    DEFAULT_ITEM_WIDTH = 57,
+        //default multi style,unit px
+        DEFAULT_ITEM_WIDTH = 57,
         DEFAULT_ITEM_SPACE = 3,
 
 
-    //default max width when multiple,unit px
-    DEFAULT_INPUT_MAX_WIDTH = 500,
+        //default max width when multiple,unit px
+        DEFAULT_INPUT_MAX_WIDTH = 500,
 
 
-    //max loaded item at a time when show all(min:dropdownMaxItem + 1)
-    ALL_DROPDOWN_NUM = 100,
+        //max loaded item at a time when show all(min:dropdownMaxItem + 1)
+        ALL_DROPDOWN_NUM = 100,
 
 
-    //default search box animate duration,unit ms
-    BOX_ANIMATE_TIME = 200,
+        //default search box animate duration,unit ms
+        BOX_ANIMATE_TIME = 200,
 
 
-    //default search delay,unit ms
-    SEARCH_DELAY = 200,
+        //default search delay,unit ms
+        SEARCH_DELAY = 200,
 
 
-    //default dropdown button width,unit px
-    DROPDOWN_WIDTH = 24,
+        //default dropdown button width,unit px
+        DROPDOWN_WIDTH = 24,
 
 
-    //key code
-    KEY = {
-        BACKSPACE: 8,
-        ENTER: 13,
-        ESC: 27,
-        SPACE: 32,
-        LEFT: 37,
-        UP: 38,
-        RIGHT: 39,
-        DOWN: 40
-    },
+        //key code
+        KEY = {
+            BACKSPACE: 8,
+            ENTER: 13,
+            ESC: 27,
+            SPACE: 32,
+            LEFT: 37,
+            UP: 38,
+            RIGHT: 39,
+            DOWN: 40
+        },
 
 
-    //cache doms string
-    doms = {
-        wrapper: 'magicsearch-wrapper',
-        box: 'magicsearch-box',
-        arrow: 'magicsearch-arrow',
-        loading: 'magicsearch-loading',
-        hidden: 'magicsearch-hidden',
-        items: 'multi-items',
-        item: 'multi-item',
-        close: 'multi-item-close'
-    },
+        //cache doms string
+        doms = {
+            wrapper: 'magicsearch-wrapper',
+            box: 'magicsearch-box',
+            arrow: 'magicsearch-arrow',
+            loading: 'magicsearch-loading',
+            hidden: 'magicsearch-hidden',
+            items: 'multi-items',
+            item: 'multi-item',
+            close: 'multi-item-close'
+        },
         isString = function isString(value) {
-        return $.type(value) === 'string';
-    },
+            return $.type(value) === 'string';
+        },
 
 
-    //transform string which like this : %username%
-    formatParse = function formatParse(format, data) {
-        var fields = format.match(new RegExp('\\' + SEPARATOR + '[^\\' + SEPARATOR + ']+\\' + SEPARATOR, 'g'));
-        if (!fields) {
-            return format;
-        }
-        for (var i = 0; i < fields.length; i++) {
-            fields[i] = fields[i].replace(new RegExp('\\' + SEPARATOR, 'g'), '');
-        }
-        for (var _i = 0; _i < fields.length; _i++) {
-            format = format.replace(SEPARATOR + fields[_i] + SEPARATOR, data[fields[_i]] ? data[fields[_i]] : 'error');
-        }
-        return format;
-    },
-
-    //delete px at ending
-    deletePx = function deletePx(value) {
-        var index = value.lastIndexOf('px');
-        return index < 0 ? Number(value) : Number(value.substring(0, index));
-    },
-
-    //transform to positive num
-    transform2PositiveNum = function transform2PositiveNum(value, key) {
-        if (!$.isNumeric(value)) {
-            value = MagicSearch.defaults[key];
-        } else {
-            value = Math.ceil(Number(value));
-            if (value <= 0) {
-                value = MagicSearch.defaults[key];
+        //transform string which like this : %username%
+        formatParse = function formatParse(format, data) {
+            var fields = format.match(new RegExp('\\' + SEPARATOR + '[^\\' + SEPARATOR + ']+\\' + SEPARATOR, 'g'));
+            if (!fields) {
+                return format;
             }
-        }
-        return value;
-    },
+            for (var i = 0; i < fields.length; i++) {
+                fields[i] = fields[i].replace(new RegExp('\\' + SEPARATOR, 'g'), '');
+            }
+            for (var _i = 0; _i < fields.length; _i++) {
+                format = format.replace(SEPARATOR + fields[_i] + SEPARATOR, data[fields[_i]] ? data[fields[_i]] : 'error');
+            }
+            return format;
+        },
 
-    //constructor
-    MagicSearch = function MagicSearch(element, options) {
-        this.element = element;
-        this.$element = $(element);
-        this.options = options;
-    };
+        //delete px at ending
+        deletePx = function deletePx(value) {
+            var index = value.lastIndexOf('px');
+            return index < 0 ? Number(value) : Number(value.substring(0, index));
+        },
+
+        //transform to positive num
+        transform2PositiveNum = function transform2PositiveNum(value, key) {
+            if (!$.isNumeric(value)) {
+                value = MagicSearch.defaults[key];
+            } else {
+                value = Math.ceil(Number(value));
+                if (value <= 0) {
+                    value = MagicSearch.defaults[key];
+                }
+            }
+            return value;
+        },
+
+        //constructor
+        MagicSearch = function MagicSearch(element, options) {
+            this.element = element;
+            this.$element = $(element);
+            this.options = options;
+        };
 
     MagicSearch.defaults = {
         dataSource: [], //array or string or function
@@ -302,7 +311,8 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
                     error: function error() {
                         console.error('magicsearch: Error with xhr.Index: ' + window.MagicSearch.index);
                     },
-                    success: function success(data) {}
+                    success: function success(data) {
+                    }
                 };
                 ajaxOptions = $.extend({}, ajaxOptions, this.options.ajaxOptions);
                 var success = ajaxOptions.success;
@@ -635,7 +645,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
                     if (inputVals[_i3] === '') {
                         continue;
                     }
-                    inputData.push({ value: inputVals[_i3], flag: false });
+                    inputData.push({value: inputVals[_i3], flag: false});
                 }
                 //search match data
                 for (var _i4 = 0; _i4 < dataJson.length; _i4++) {
@@ -719,12 +729,12 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
                                     }
                                     length++;
                                     if (_i8 === 0) {
-                                        tmpPosArr.push({ start: start, length: length });
+                                        tmpPosArr.push({start: start, length: length});
                                     }
                                 } else {
                                     if (hasStarted) {
                                         hasStarted = false;
-                                        tmpPosArr.push({ start: start, length: length });
+                                        tmpPosArr.push({start: start, length: length});
                                         length = 0;
                                     }
                                 }
@@ -977,7 +987,8 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
                 }
             }).on('keydown', function (e) {
                 var $_this = $(this);
-                if (e.which == KEY.ESC) {} else if (e.which == KEY.UP) {
+                if (e.which == KEY.ESC) {
+                } else if (e.which == KEY.UP) {
                     return false;
                 } else if (e.which == KEY.DOWN) {
                     return false;

@@ -1,3 +1,5 @@
+import sys
+
 from django.core.mail import EmailMessage
 from django.db.models import Q
 from django.http import Http404, HttpResponse
@@ -288,23 +290,135 @@ def expert_aggregate(request):
             'ads': ads,
             'form': form,
             'experts': experts,
+            'weights': {},
+            'final_wealth': 0,
         })
     else:
         experts = list(map(int, request.POST['experts'].split(',')))
         if 0 in experts:
             experts = Expert.objects.all()
+            ads = Signal.objects.all().order_by('-expert__raw_score')[:200]
         else:
             experts = Expert.objects.filter(id__in=experts)
+            ads = Signal.objects.filter(expert_id__in=experts)
 
-        return HttpResponse(experts)
-        # form = ApplyAlgorithmForm(request.POST)
-        # if form.is_valid():
-        #     included_experts = map(lambda x: int(x), form.cleaned_data.get('included_experts'))
-        #     ads = Signal.objects.filter(expert_id__in=included_experts)
-        #     return render(request, '../templates/expert_aggregation.html', {
-        #         'ads': ads,
-        #         'form': form,
-        #         'experts': experts,
-        #     })
-        # else:
-        #     return render(request, '../templates/expert_aggregation.html', {'ads': [], 'form': form, 'experts': experts})
+        output = {}
+        weights = {}
+        num_of_signals = {}
+        wealth = 1
+        taken_signals = []
+        not_taken_signals = []
+        to_invest = 0.78
+
+        for ad in ads:
+            user_id = ad.expert.id
+            start_date = ad.start_date
+            signal_id = ad.id
+            weights[user_id] = 1
+            num_of_signals[user_id] = 0
+            if start_date not in output:
+                output[start_date] = {}
+            output[start_date].update(
+                {signal_id: {'user_id': ad.expert.id, 'share_id': ad.symbol, 'profit': ad.profit / 100,
+                             'close_date': ad.close_date, 'is_successful': ad.is_succeeded,
+                             'expected_return': ad.expected_return,
+                             'start_date': ad.start_date,
+                             'expected_risk': ad.expected_risk}})
+
+        def sell_all_possible_shares():
+            # taking back profit from sold shares
+            total_profit = 0
+            closed_signals_ids = []
+            for taken_signal in taken_signals:
+                sig = taken_signal[0]
+                if sig['close_date'] <= signal_date:
+                    last_profit = taken_signal[1] * (1 + sig['profit'])
+                    print("selling " + sig['share_id'] + " share, end date: " +
+                          str(sig['close_date']) + ", getting : " + str(last_profit))
+                    total_profit += last_profit
+                    closed_signals_ids.append(taken_signal)
+                    uid = sig['user_id']
+                    if not sig['is_successful']:
+                        # print(sig['share_id'] + "in " + str(sig['start_date']) + " was a failure")
+                        weights[uid] *= 1 - 1 / (num_of_signals[uid] + 1)
+
+            for closed_signal in closed_signals_ids:
+                taken_signals.remove(closed_signal)
+
+            closed_signals_ids = []
+            for sig in not_taken_signals:
+                if sig['close_date'] <= signal_date:
+                    closed_signals_ids.append(sig)
+                    uid = sig['user_id']
+                    if not sig['is_successful']:
+                        # print(signal['share_id'] + "in " + str(signal['start_date']) + " was a failure")
+                        weights[uid] *= 1 - 1 / (num_of_signals[uid] + 1)
+
+            for closed_signal in closed_signals_ids:
+                not_taken_signals.remove(closed_signal)
+
+            return total_profit
+
+        for signal_date in sorted(output.keys()):
+            # a day with signals in history.
+            all_signals_for_share = {}
+            investing_percentage = {}
+            return_plus_risk = {}
+            for signal_id in output[signal_date].keys():
+                signal = output[signal_date][signal_id]
+                # a signal in the signal_date.
+                share_id = signal['share_id']
+                user_id = signal['user_id']
+                num_of_signals[user_id] += 1
+                user_weight = weights[user_id]
+                investing_percentage[signal_id] = user_weight
+                return_plus_risk[signal_id] = (signal['expected_return'] + signal['expected_risk']) / signal[
+                    'expected_duration']
+                if share_id not in all_signals_for_share:
+                    all_signals_for_share[share_id] = []
+                all_signals_for_share[share_id].append(signal)
+
+            # normalizing weights and return_plus_risks
+            sum_of_weights = sum(investing_percentage.values())
+            sum_of_rps = sum(return_plus_risk.values())
+            if sum_of_rps != 0:
+                return_plus_risk.update((x, y / sum_of_rps) for (x, y) in return_plus_risk.items())
+            investing_percentage.update(
+                (x, (2 * y / sum_of_weights + return_plus_risk.get(x)) / 3) for (x, y) in
+                investing_percentage.items())
+
+            new_profit = sell_all_possible_shares()
+            wealth += new_profit
+            # print(wealth)
+
+            step = 0.22
+            if new_profit > 1 and to_invest <= 1 - step:
+                to_invest += step
+
+            # investing
+            new_wealth = wealth
+            for (sig_id, p) in investing_percentage.items():
+                signal = output[signal_date][sig_id]
+                if new_wealth > 0.0001:
+                    invested_money = wealth * to_invest * p
+                    print("buying " + signal['share_id'] + " share, start: " + str(
+                        signal_date) + ", spending : " + str(
+                        invested_money))
+                    taken_signals.append((signal, invested_money))
+                    new_wealth -= invested_money
+                else:
+                    not_taken_signals.append(signal)
+            wealth = new_wealth
+
+        print("Selling remaining shares in:")
+        signal_date = sys.maxsize
+        new_profit = sell_all_possible_shares()
+        wealth += new_profit
+        print("Final wealth = " + str(wealth))
+
+        return render(request, '../templates/expert_aggregation.html', {
+            'ads': ads,
+            'experts': experts,
+            'weights': weights,
+            'final_wealth': wealth,
+        })
