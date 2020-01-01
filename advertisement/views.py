@@ -1,3 +1,4 @@
+import datetime
 import sys
 
 from django.core.mail import EmailMessage
@@ -319,18 +320,20 @@ def expert_aggregate(request):
             if start_date not in output:
                 output[start_date] = {}
             output[start_date].update(
-                {signal_id: {'user_id': ad.expert.id, 'share_id': ad.symbol, 'profit': ad.profit / 100,
+                {signal_id: {'user_id': ad.expert.id, 'share_id': ad.symbol.name, 'profit': ad.profit / 100,
                              'close_date': ad.close_date, 'is_successful': ad.is_succeeded,
                              'expected_return': ad.expected_return,
                              'start_date': ad.start_date,
                              'expected_risk': ad.expected_risk}})
 
-        def sell_all_possible_shares():
+        def sell_all_possible_shares(signal_date, taken_signals, weights, num_of_signals, not_taken_signals):
             # taking back profit from sold shares
             total_profit = 0
             closed_signals_ids = []
             for taken_signal in taken_signals:
                 sig = taken_signal[0]
+                if type(signal_date) == int:
+                    print("sag")
                 if sig['close_date'] <= signal_date:
                     last_profit = taken_signal[1] * (1 + sig['profit'])
                     print("selling " + sig['share_id'] + " share, end date: " +
@@ -372,8 +375,8 @@ def expert_aggregate(request):
                 num_of_signals[user_id] += 1
                 user_weight = weights[user_id]
                 investing_percentage[signal_id] = user_weight
-                return_plus_risk[signal_id] = (signal['expected_return'] + signal['expected_risk']) / signal[
-                    'expected_duration']
+                return_plus_risk[signal_id] = (signal['expected_return'] + signal['expected_risk']) / (signal[
+                    'close_date'] - signal['start_date']).days
                 if share_id not in all_signals_for_share:
                     all_signals_for_share[share_id] = []
                 all_signals_for_share[share_id].append(signal)
@@ -387,7 +390,7 @@ def expert_aggregate(request):
                 (x, (2 * y / sum_of_weights + return_plus_risk.get(x)) / 3) for (x, y) in
                 investing_percentage.items())
 
-            new_profit = sell_all_possible_shares()
+            new_profit = sell_all_possible_shares(signal_date, taken_signals, weights, num_of_signals, not_taken_signals)
             wealth += new_profit
             # print(wealth)
 
@@ -411,8 +414,8 @@ def expert_aggregate(request):
             wealth = new_wealth
 
         print("Selling remaining shares in:")
-        signal_date = sys.maxsize
-        new_profit = sell_all_possible_shares()
+        signal_date = datetime.date(year=2030, month=1, day=1)
+        new_profit = sell_all_possible_shares(signal_date, taken_signals, weights, num_of_signals, not_taken_signals)
         wealth += new_profit
         print("Final wealth = " + str(wealth))
 
