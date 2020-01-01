@@ -46,6 +46,21 @@
                     </form>
                 </div>
             </div>
+            {% if show_results %}
+                <div class="col-xs-10 col-md-8 col-lg-8 col-sm-8 offset-xs-1 offset-md-2 offset-lg-2 offset-sm-2 the-box"
+                     style="margin-top: 10px">
+                    <div class="well bs-component">
+                        <h3>Invest on the following experts with the given weights:</h3>
+                        <ul style="display: flex; justify-content: left; flex-direction: column">
+                            {% for key, value in weights.items %}
+                                <li>{{ key.display_name }}: {{ value }}</li>
+                            {% endfor %}
+                        </ul>
+                        <h3>If you had started investing on these experts 3 years ago, with this algorithm, your money
+                            would have earned a {{ final_wealth }} percent profit</h3>
+                    </div>
+                </div>
+            {% endif %}
             <div class="col-xs-10 col-md-8 col-lg-8 col-sm-8 offset-xs-1 offset-md-2 offset-lg-2 offset-sm-2 the-box
                 list-group table-of-contents" style="margin-top: 30px">
                 {% for ad in ads %}

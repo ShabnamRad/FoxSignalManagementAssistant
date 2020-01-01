@@ -293,6 +293,7 @@ def expert_aggregate(request):
             'experts': experts,
             'weights': {},
             'final_wealth': 0,
+            'show_results': False,
         })
     else:
         experts = list(map(int, request.POST['experts'].split(',')))
@@ -313,15 +314,16 @@ def expert_aggregate(request):
 
         for ad in ads:
             user_id = ad.expert.id
+            expert = ad.expert
             start_date = ad.start_date
             signal_id = ad.id
-            weights[user_id] = 1
+            weights[expert] = 1
             num_of_signals[user_id] = 0
             if start_date not in output:
                 output[start_date] = {}
             output[start_date].update(
                 {signal_id: {'user_id': ad.expert.id, 'share_id': ad.symbol.name, 'profit': ad.profit / 100,
-                             'close_date': ad.close_date, 'is_successful': ad.is_succeeded,
+                             'close_date': ad.close_date, 'is_successful': ad.is_succeeded, 'expert': expert,
                              'expected_return': ad.expected_return,
                              'start_date': ad.start_date,
                              'expected_risk': ad.expected_risk}})
@@ -343,7 +345,7 @@ def expert_aggregate(request):
                     uid = sig['user_id']
                     if not sig['is_successful']:
                         # print(sig['share_id'] + "in " + str(sig['start_date']) + " was a failure")
-                        weights[uid] *= 1 - 1 / (num_of_signals[uid] + 1)
+                        weights[sig['expert']] *= 1 - 1 / (num_of_signals[uid] + 1)
 
             for closed_signal in closed_signals_ids:
                 taken_signals.remove(closed_signal)
@@ -355,7 +357,7 @@ def expert_aggregate(request):
                     uid = sig['user_id']
                     if not sig['is_successful']:
                         # print(signal['share_id'] + "in " + str(signal['start_date']) + " was a failure")
-                        weights[uid] *= 1 - 1 / (num_of_signals[uid] + 1)
+                        weights[sig['expert']] *= 1 - 1 / (num_of_signals[uid] + 1)
 
             for closed_signal in closed_signals_ids:
                 not_taken_signals.remove(closed_signal)
@@ -373,10 +375,10 @@ def expert_aggregate(request):
                 share_id = signal['share_id']
                 user_id = signal['user_id']
                 num_of_signals[user_id] += 1
-                user_weight = weights[user_id]
+                user_weight = weights[signal['expert']]
                 investing_percentage[signal_id] = user_weight
-                return_plus_risk[signal_id] = (signal['expected_return'] + signal['expected_risk']) / (signal[
-                    'close_date'] - signal['start_date']).days
+                return_plus_risk[signal_id] = (signal['expected_return'] + signal['expected_risk']) / ((
+                            signal['close_date'] - signal['start_date']).days + 1)
                 if share_id not in all_signals_for_share:
                     all_signals_for_share[share_id] = []
                 all_signals_for_share[share_id].append(signal)
@@ -390,7 +392,8 @@ def expert_aggregate(request):
                 (x, (2 * y / sum_of_weights + return_plus_risk.get(x)) / 3) for (x, y) in
                 investing_percentage.items())
 
-            new_profit = sell_all_possible_shares(signal_date, taken_signals, weights, num_of_signals, not_taken_signals)
+            new_profit = sell_all_possible_shares(signal_date, taken_signals, weights, num_of_signals,
+                                                  not_taken_signals)
             wealth += new_profit
             # print(wealth)
 
@@ -418,10 +421,12 @@ def expert_aggregate(request):
         new_profit = sell_all_possible_shares(signal_date, taken_signals, weights, num_of_signals, not_taken_signals)
         wealth += new_profit
         print("Final wealth = " + str(wealth))
+        print(weights)
 
         return render(request, '../templates/expert_aggregation.html', {
             'ads': ads,
             'experts': experts,
             'weights': weights,
-            'final_wealth': wealth,
+            'final_wealth': (wealth - 1) * 100,
+            'show_results': True,
         })
