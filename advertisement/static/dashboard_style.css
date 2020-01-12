@@ -3,15 +3,15 @@
     font-family: 'entypo';
     font-style: normal;
     font-weight: normal;
-    src: url('http://weloveiconfonts.com/api/fonts/entypo/entypo.eot');
-    src: url('http://weloveiconfonts.com/api/fonts/entypo/entypo.eot?#iefix') format('eot'), url('https://weloveiconfonts.com/api/fonts/entypo/entypo.woff') format('woff'), url('https://weloveiconfonts.com/api/fonts/entypo/entypo.ttf') format('truetype'), url('http://weloveiconfonts.com/api/fonts/entypo/entypo.svg#entypo') format('svg');
+    src: url('font/entypo.eot');
+    src: url('font/entypo.eot') format('eot'), url('font/entypo.woff') format('woff'), url('font/entypo.ttf') format('truetype'), url('font/entypo.svg') format('svg');
 }
 
 @font-face {
     font-family: 'Muli';
     font-style: normal;
     font-weight: 400;
-    src: local('Muli Regular'), local('Muli-Regular'), url(https://fonts.gstatic.com/s/muli/v13/7Auwp_0qiz-afTLGKA.ttf) format('truetype');
+    src: local('Muli Regular'), local('Muli-Regular'), url('font/7Auwp_0qiz-afTLGKA.ttf') format('truetype');
 }
 
 body {
@@ -208,7 +208,7 @@ main {
     font-size: 38px;
     position: absolute;
     left: -50px;
-    font-family: "entypo";
+    font-family: "entypo", serif;
 }
 
 a:hover {

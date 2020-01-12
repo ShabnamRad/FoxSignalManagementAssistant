@@ -9,8 +9,7 @@
     <link rel="stylesheet" href="{% static 'bootstrap-4.0.0.min.css' %}">
     <link rel="stylesheet" href="{% static 'style.css' %}?v=1">
     <link rel="icon" href="{% static 'favicon.ico' %}">
-
-    <script src="{% static 'jquery.min.js' %}"></script>
+    <script src="{% static 'jquery-2.2.3.min.js' %}"></script>
 {% endblock %}
 
 {% block content %}
@@ -76,7 +75,6 @@
                         <h1 style="float: right; font-size: 15px">{{ expert.display_name }}</h1>
                     </h1>
                 </div>
-                        <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
                         <script src="{% static 'chart/hammer-2.0.8.min.js' %}"></script>
                         <script src="{% static 'chart/Chart-2.8.0.bundle.min.js' %}"></script>
                         <script src="{% static 'chart/chartjs-plugin-zoom-0.6.6.js' %}"></script>
@@ -115,7 +113,8 @@
                                 </h3>
                                 <h6><a style="color: black"
                                        href={% url 'expert_page' ad.expert.id %}>expert: {{ ad.user_id }}</a></h6>
-                                <h6>symbol: {{ ad.symbol }}</h6>
+                                <h6><a style="color: black"
+                                       href={% url 'symbol_detail' ad.symbol.name %}>symbol: {{ ad.symbol }}</a></h6>
                                 <h6><a href={% url 'signal_detail' ad.id %}>See more</a></h6>
                             </div>
                             <p style="float: right; margin: auto 10px; font-size: 25px; font-weight: bold; color: green">{{ ad.expected_return }}</p>
