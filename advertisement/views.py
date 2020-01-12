@@ -1,5 +1,4 @@
 import datetime
-import sys
 
 from django.core.mail import EmailMessage
 from django.db.models import Q
@@ -40,7 +39,7 @@ def search(request):
             return render(request, '../templates/search.html', {'form': form})
 
 
-def add_advertisement(request):
+def add_signal(request):
     if request.method == 'GET':
         form = AddSignalForm()
         return render(request, '../templates/add_signal.html', {'form': form})
@@ -187,10 +186,10 @@ class LineChartJsonView(BaseLineChartView):
             id=self.kwargs['ad']).order_by('start_date').values_list('start_date', 'close_date')
         self.other_signals = other_signals
         price_arr = stock_data[symbols[sig.symbol.name]]
-        signal_arr = [None for x in price_arr]
-        other_signals_arr = [[None for x in price_arr] for i in range(len(other_signals))]
-        buy_arr = [None for x in price_arr]
-        sell_arr = [None for x in price_arr]
+        signal_arr = [None for _ in price_arr]
+        other_signals_arr = [[None for _ in price_arr] for i in range(len(other_signals))]
+        buy_arr = [None for _ in price_arr]
+        sell_arr = [None for _ in price_arr]
 
         for i, x in enumerate(price_arr):
             if sig.start_date <= x[0].date() <= sig.close_date:
@@ -228,10 +227,10 @@ class SymbolChartJsonView(BaseLineChartView):
         return [[x[1] for x in arr]]
 
 
-def advertisement_detail(request, advertisement_id):
+def signal_detail(request, signal_id):
     try:
-        advertisement = Signal.objects.get(pk=advertisement_id)
-        return render(request, '../templates/ad_detail.html', {
+        advertisement = Signal.objects.get(pk=signal_id)
+        return render(request, '../templates/signal_detail.html', {
             'advertisement': advertisement
         })
     except Signal.DoesNotExist:
@@ -272,12 +271,12 @@ def expert_page(request, expert_id):
     })
 
 
-def falo(request, expert_id):
+def follow(request, expert_id):
     request.user.member.followings.add(expert_id)
     return HttpResponse("OK")
 
 
-def onfalo(request, expert_id):
+def unfollow(request, expert_id):
     request.user.member.followings.remove(expert_id)
     return HttpResponse("OK")
 

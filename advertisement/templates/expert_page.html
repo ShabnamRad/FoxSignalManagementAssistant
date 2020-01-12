@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block head %}
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'bootstrap-4.0.0.min.css' %}">
     <link rel="stylesheet" href="{% static 'style.css' %}?v=1">
     <link rel="icon" href="{% static 'favicon.ico' %}">
 
@@ -19,48 +19,48 @@
             <div class="col-xs-10 col-md-8 col-lg-8 col-sm-8 offset-xs-1 offset-md-2 offset-lg-2 offset-sm-2 the-box
                     list-group table-of-contents" style="margin-top: 30px">
                 <div style="display: flex; justify-content: space-between">
-                    <button id="onfalo" class="follow-button" style="float: left" type="submit" value="continue">
+                    <button id="unfollow" class="follow-button" style="float: left" type="submit" value="continue">
                         Unfollow
                         this
                         expert!
                     </button>
-                    <button id="falo" class="follow-button" style="float: left" type="submit" value="continue">Follow
+                    <button id="follow" class="follow-button" style="float: left" type="submit" value="continue">Follow
                         this
                         expert!
                     </button>
 
                     {% if request.user.member in expert.followers.all %}
                         <script>
-                            $("#onfalo").show();
-                            $("#falo").hide();
+                            $("#unfollow").show();
+                            $("#follow").hide();
 
                         </script>
                     {% else %}
                         <script>
-                            $("#falo").show();
-                            $("#onfalo").hide();
+                            $("#follow").show();
+                            $("#unfollow").hide();
 
                         </script>
 
                     {% endif %}
 
                     <script>
-                        $('#onfalo').on('click', function () {
+                        $('#unfollow').on('click', function () {
                             $.ajax({
-                                url: '{% url 'onfalo' expert.id %}',
+                                url: '{% url 'unfollow' expert.id %}',
                                 success: function (response) {
-                                    $("#falo").show();
-                                    $("#onfalo").hide();
+                                    $("#follow").show();
+                                    $("#unfollow").hide();
                                 }
                             });
                         });
 
-                        $('#falo').on('click', function () {
+                        $('#follow').on('click', function () {
                             $.ajax({
-                                url: '{% url 'falo' expert.id %}',
+                                url: '{% url 'follow' expert.id %}',
                                 success: function (response) {
-                                    $("#onfalo").show();
-                                    $("#falo").hide();
+                                    $("#unfollow").show();
+                                    $("#follow").hide();
                                 }
                             });
                         });
@@ -77,10 +77,9 @@
                     </h1>
                 </div>
                         <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
-                        <script type="text/javascript" src="{% static 'js/Chart.min.js' %}"></script>
-                        <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
-                        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
-                        <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/0.6.6/chartjs-plugin-zoom.js"></script>
+                        <script src="{% static 'chart/hammer-2.0.8.min.js' %}"></script>
+                        <script src="{% static 'chart/Chart-2.8.0.bundle.min.js' %}"></script>
+                        <script src="{% static 'chart/chartjs-plugin-zoom-0.6.6.js' %}"></script>
                 <div class="row">
                 {% for ad in ads_chart %}
                 <div class="col-sm-4">
@@ -112,12 +111,12 @@
                     <div class="list-group-item" onclick="">
                         <div style="display: flex; justify-content: space-between">
                             <div style="float: left; flex-grow: 1" class="search-res">
-                                <h3 style="text-align: right; "><a style="color: black; font-size: x-large" href={% url 'advertisement_detail' ad.id %}>{{ ad.title }}</a>
+                                <h3 style="text-align: right; "><a style="color: black; font-size: x-large" href={% url 'signal_detail' ad.id %}>{{ ad.title }}</a>
                                 </h3>
                                 <h6><a style="color: black"
                                        href={% url 'expert_page' ad.expert.id %}>expert: {{ ad.user_id }}</a></h6>
                                 <h6>symbol: {{ ad.symbol }}</h6>
-                                <h6><a href={% url 'advertisement_detail' ad.id %}>See more</a></h6>
+                                <h6><a href={% url 'signal_detail' ad.id %}>See more</a></h6>
                             </div>
                             <p style="float: right; margin: auto 10px; font-size: 25px; font-weight: bold; color: green">{{ ad.expected_return }}</p>
                             <p style="float: right; margin: auto 10px; font-size: 25px; font-weight: bold; color: red">{{ ad.expected_risk }}</p>

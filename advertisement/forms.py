@@ -2,7 +2,7 @@ from django import forms
 from django.forms import ModelForm
 
 from advertisement.models import Signal, Member, Expert
-from advertisement.validators import phone_validator, string_check
+from advertisement.validators import phone_validator
 from django.contrib.auth.models import User
 
 

@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block head %}
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'bootstrap-4.0.0.min.css' %}">
     <link rel="stylesheet" href="{% static 'style.css' %}?v=1">
     <link rel="icon" href="{% static 'favicon.ico' %}">
 {% endblock %}
@@ -44,10 +44,9 @@
                 <canvas id="myChart" width="10" height="10"></canvas>
 
                 <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
-                <script type="text/javascript" src="{% static 'js/Chart.min.js' %}"></script>
-                <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
-                <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
-                <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/0.6.6/chartjs-plugin-zoom.js"></script>
+                <script src="{% static 'chart/hammer-2.0.8.min.js' %}"></script>
+                <script src="{% static 'chart/Chart-2.8.0.bundle.min.js' %}"></script>
+                <script src="{% static 'chart/chartjs-plugin-zoom-0.6.6.js' %}"></script>
                 <script type="text/javascript">
                     $.get('{% url "chart" advertisement.id %}', function (data) {
                         function is_successful(signal_arr) {
