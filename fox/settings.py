@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'chartjs',
+    'bourse_refs',
     'django_extensions',
 ]
 
@@ -82,8 +83,19 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    },
+    'bourse_refs': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'bourse_main',
+        'USER': 'datascientist',
+        'PASSWORD': 'XK=XYM:FYT',
+        'HOST': '192.168.204.28',
+        'PORT': '5432',
     }
 }
+
+
+DATABASE_ROUTERS = ['fox.router.StockRouter']
 
 
 # Password validation
