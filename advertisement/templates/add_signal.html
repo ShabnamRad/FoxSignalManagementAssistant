@@ -1,0 +1,46 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+
+{% block title %}
+Adding Signal
+{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'bootstrap-4.0.0.min.css' %}">
+    <link rel="stylesheet" href="{% static 'style.css' %}?v=1">
+    <link rel="icon" href="{% static 'favicon.ico' %}">
+{% endblock %}
+
+{% block content %}
+<div class="grid">
+    <div class="row"></div>
+    <div class="row">
+        <div class="col-xs-10 col-md-8 col-lg-8 col-sm-8 offset-xs-1 offset-md-2 offset-lg-2 offset-sm-2 the-box">
+            <div class="well bs-component">
+                <form method="post" class="form-horizontal" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <fieldset>
+                        <legend>Add your signal details in here!</legend>
+                        {% for field in form %}
+                            <div class="form-group" style="color: #ff0026; display: flex; align-items: center;">
+                                {{ field.errors }}
+                            </div>
+                            <div class="form-group" style="display: flex; align-items: center;">
+                                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-3 control-label">{{ field.label_tag }}</div>
+                                <div class="col-xs-10 col-sm-9 col-md-8 col-lg-8">{{ field }}</div>
+                                {% if field.help_text %}
+                                    <p class="help">{{ field.help_text|safe }}</p>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                        <br/>
+                        <button type="submit" value="continue"
+                                class="btn btn-default offset-xs-5 offset-sm-5 offset-md-5 offset-lg-5">Submit
+                        </button>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

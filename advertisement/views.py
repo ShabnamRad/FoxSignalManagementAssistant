@@ -1,5 +1,4 @@
 import datetime
-import sys
 
 from django.core.mail import EmailMessage
 from django.db.models import Q
@@ -40,7 +39,7 @@ def search(request):
             return render(request, '../templates/search.html', {'form': form})
 
 
-def add_advertisement(request):
+def add_signal(request):
     if request.method == 'GET':
         form = AddSignalForm()
         return render(request, '../templates/add_signal.html', {'form': form})
@@ -187,10 +186,10 @@ class LineChartJsonView(BaseLineChartView):
             id=self.kwargs['ad']).order_by('start_date').values_list('start_date', 'close_date')
         self.other_signals = other_signals
         price_arr = stock_data[symbols[sig.symbol.name]]
-        signal_arr = [None for x in price_arr]
-        other_signals_arr = [[None for x in price_arr] for i in range(len(other_signals))]
-        buy_arr = [None for x in price_arr]
-        sell_arr = [None for x in price_arr]
+        signal_arr = [None for _ in price_arr]
+        other_signals_arr = [[None for _ in price_arr] for i in range(len(other_signals))]
+        buy_arr = [None for _ in price_arr]
+        sell_arr = [None for _ in price_arr]
 
         for i, x in enumerate(price_arr):
             if sig.start_date <= x[0].date() <= sig.close_date:
@@ -228,10 +227,10 @@ class SymbolChartJsonView(BaseLineChartView):
         return [[x[1] for x in arr]]
 
 
-def advertisement_detail(request, advertisement_id):
+def signal_detail(request, signal_id):
     try:
-        advertisement = Signal.objects.get(pk=advertisement_id)
-        return render(request, '../templates/ad_detail.html', {
+        advertisement = Signal.objects.get(pk=signal_id)
+        return render(request, '../templates/signal_detail.html', {
             'advertisement': advertisement
         })
     except Signal.DoesNotExist:
@@ -272,12 +271,12 @@ def expert_page(request, expert_id):
     })
 
 
-def falo(request, expert_id):
+def follow(request, expert_id):
     request.user.member.followings.add(expert_id)
     return HttpResponse("OK")
 
 
-def onfalo(request, expert_id):
+def unfollow(request, expert_id):
     request.user.member.followings.remove(expert_id)
     return HttpResponse("OK")
 
@@ -297,9 +296,11 @@ def expert_aggregate(request):
         })
     else:
         experts = list(map(int, request.POST['experts'].split(',')))
+        all_ads = False
         if 0 in experts:
             experts = Expert.objects.all()
-            ads = Signal.objects.all().order_by('-expert__raw_score')[:200]
+            ads = Signal.objects.all()
+            all_ads = True
         else:
             experts = Expert.objects.filter(id__in=experts)
             ads = Signal.objects.filter(expert_id__in=experts)
@@ -313,6 +314,8 @@ def expert_aggregate(request):
         to_invest = 0.78
 
         for ad in ads:
+            if ad.is_succeeded is None:
+                continue
             user_id = ad.expert.id
             expert = ad.expert
             start_date = ad.start_date
@@ -334,12 +337,10 @@ def expert_aggregate(request):
             closed_signals_ids = []
             for taken_signal in taken_signals:
                 sig = taken_signal[0]
-                if type(signal_date) == int:
-                    print("sag")
                 if sig['close_date'] <= signal_date:
                     last_profit = taken_signal[1] * (1 + sig['profit'])
-                    print("selling " + sig['share_id'] + " share, end date: " +
-                          str(sig['close_date']) + ", getting : " + str(last_profit))
+                    # print("selling " + sig['share_id'] + " share, end date: " +
+                    #       str(sig['close_date']) + ", getting : " + str(last_profit))
                     total_profit += last_profit
                     closed_signals_ids.append(taken_signal)
                     uid = sig['user_id']
@@ -407,21 +408,25 @@ def expert_aggregate(request):
                 signal = output[signal_date][sig_id]
                 if new_wealth > 0.0001:
                     invested_money = wealth * to_invest * p
-                    print("buying " + signal['share_id'] + " share, start: " + str(
-                        signal_date) + ", spending : " + str(
-                        invested_money))
+                    # print("buying " + signal['share_id'] + " share, start: " + str(
+                    #     signal_date) + ", spending : " + str(
+                    #     invested_money))
                     taken_signals.append((signal, invested_money))
                     new_wealth -= invested_money
                 else:
                     not_taken_signals.append(signal)
             wealth = new_wealth
 
-        print("Selling remaining shares in:")
+        # print("Selling remaining shares in:")
         signal_date = datetime.date(year=2030, month=1, day=1)
         new_profit = sell_all_possible_shares(signal_date, taken_signals, weights, num_of_signals, not_taken_signals)
         wealth += new_profit
-        print("Final wealth = " + str(wealth))
-        print(weights)
+        if all_ads:
+            ads = ads.order_by('-expert__raw_score')[:200]
+        # normalization
+        sum_of_weights = sum(weights.values())
+        for e, weight in weights.items():
+            weights[e] = weight/sum_of_weights
 
         return render(request, '../templates/expert_aggregation.html', {
             'ads': ads,

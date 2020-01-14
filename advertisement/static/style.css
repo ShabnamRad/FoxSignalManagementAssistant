@@ -1,0 +1,99 @@
+body {
+    padding-top: 80px;
+    padding-bottom: 80px;
+    background-image: url("Stock_bg_denim.jpg") ;
+    background-size: cover;
+    background-attachment: fixed;
+}
+
+legend {
+    display: block;
+    width: 100%;
+    padding: 0;
+    margin-bottom: 20px;
+    font-size: 21px;
+    line-height: inherit;
+    color: #333;
+    border: 0;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.the-box {
+    padding: 50px;
+    alignment: center;
+    background: rgba(169, 169, 169, 0.9);
+    border: 1px solid black;
+    border-radius: 20px;
+}
+
+.greeting {
+    color: #ef3f3f;
+    font-size: 60px;
+    font-weight: bolder;
+    word-break: break-word;
+    transition: all 0.5s;
+}
+
+.greeting p {
+    color: black;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.browse-link a {
+    color: white;
+    font-size: 16px;
+}
+
+.search-res img {
+  float: left;
+  width: 100px;
+  height: 100px;
+  background: #555;
+}
+
+.search-res h2 {
+  position: relative;
+  top: 18px;
+  left: 10px;
+}
+
+.search-res h6 {
+  position: relative;
+  top: 18px;
+  left: 10px;
+}
+
+.horizontal-items ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.box-flex a {
+    color: rgba(0, 0, 0, .5);
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.box-flex p {
+    color: #1da1f2;
+    font-weight: bold;
+}
+
+.box-flex {
+    margin: 12px;
+    text-align: center;
+}
+
+.follow-button {
+    background-color: #51f21a;
+    border: 1px solid #0a2506;
+    cursor: pointer;
+    text-align: center;
+    font-weight: bold;
+}
+
+.follow-button:hover {
+    background-color: #bdf5ad;
+}

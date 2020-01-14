@@ -3,7 +3,7 @@ import os
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
-from django.db.models import CASCADE, Max, Min
+from django.db.models import Max, Min
 
 from advertisement.constant import SEX_CHOICES
 from advertisement.utils import generate_random_token
@@ -43,7 +43,6 @@ class Member(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
     followings = models.ManyToManyField(to='Expert', related_name='followers')
-    # expert = models.ForeignKey(to='Expert', null=True, blank=True, on_delete=CASCADE)
 
     def __str__(self):
         return self.first_name  # + ' ' + self.last_name

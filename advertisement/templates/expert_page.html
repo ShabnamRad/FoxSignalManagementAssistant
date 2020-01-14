@@ -1,0 +1,275 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+
+{% block title %}
+    Expert Page
+{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'bootstrap-4.0.0.min.css' %}">
+    <link rel="stylesheet" href="{% static 'style.css' %}?v=1">
+    <link rel="icon" href="{% static 'favicon.ico' %}">
+    <script src="{% static 'jquery-2.2.3.min.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+    <div class="grid">
+        <div class="row">
+            <div class="col-xs-10 col-md-8 col-lg-8 col-sm-8 offset-xs-1 offset-md-2 offset-lg-2 offset-sm-2 the-box
+                    list-group table-of-contents" style="margin-top: 30px">
+                <div style="display: flex; justify-content: space-between">
+                    <button id="unfollow" class="follow-button" style="float: left" type="submit" value="continue">
+                        Unfollow
+                        this
+                        expert!
+                    </button>
+                    <button id="follow" class="follow-button" style="float: left" type="submit" value="continue">Follow
+                        this
+                        expert!
+                    </button>
+
+                    {% if request.user.member in expert.followers.all %}
+                        <script>
+                            $("#unfollow").show();
+                            $("#follow").hide();
+
+                        </script>
+                    {% else %}
+                        <script>
+                            $("#follow").show();
+                            $("#unfollow").hide();
+
+                        </script>
+
+                    {% endif %}
+
+                    <script>
+                        $('#unfollow').on('click', function () {
+                            $.ajax({
+                                url: '{% url 'unfollow' expert.id %}',
+                                success: function (response) {
+                                    $("#follow").show();
+                                    $("#unfollow").hide();
+                                }
+                            });
+                        });
+
+                        $('#follow').on('click', function () {
+                            $.ajax({
+                                url: '{% url 'follow' expert.id %}',
+                                success: function (response) {
+                                    $("#unfollow").show();
+                                    $("#follow").hide();
+                                }
+                            });
+                        });
+
+                    </script>
+                    <h1 style="display: flex; flex-grow: 1; justify-content: space-between">
+                        <p style="float: left; margin: auto; font-size: 13px; font-weight: bolder; font-style: italic; color: goldenrod">
+                            Score: {{ score }}</p>
+                        <p style="float: left; margin: auto; font-size: 13px; font-weight: bolder; font-style: italic; color: green">
+                            T: {{ success }}</p>
+                        <p style="float: left; margin: auto; font-size: 13px; font-weight: bolder; font-style: italic; color: red">
+                            F: {{ failure }}</p>
+                        <h1 style="float: right; font-size: 15px">{{ expert.display_name }}</h1>
+                    </h1>
+                </div>
+                        <script src="{% static 'chart/hammer-2.0.8.min.js' %}"></script>
+                        <script src="{% static 'chart/Chart-2.8.0.bundle.min.js' %}"></script>
+                        <script src="{% static 'chart/chartjs-plugin-zoom-0.6.6.js' %}"></script>
+                <div class="row">
+                {% for ad in ads_chart %}
+                <div class="col-sm-4">
+                                <canvas id="myChart-{{forloop.counter}}" width="5" height="5"></canvas>
+                </div>
+                {% endfor %}
+
+
+                </div>
+                <div class="row">
+                    <div style="margin-bottom: 10px" class="col-xs-4 col-md-4 col-lg-4 col-sm-4 offset-xs-4 offset-md-4 offset-lg-4 offset-sm-4">
+                    <button id="prevPage"> Previous Page </button>
+                    <button id="nextPage"> Next Page </button>
+                        </div>
+                   </div>
+
+                <!--            <div class="list-group-item" onclick="">-->
+                <!--                <div style="display: flex; justify-content: space-between">-->
+                <!--                    <div style="float: left; flex-grow: 1" class="search-res">-->
+                <!--                        Securities:-->
+                <!--                        {% for sec in securities %}-->
+                    <!--                            {{ sec.1 }}-->
+                    <!--                        {% endfor %}-->
+                <!--                    </div>-->
+                <!--                </div>-->
+                <!--            </div>-->
+
+                {% for ad in ads %}
+                    <div class="list-group-item" onclick="">
+                        <div style="display: flex; justify-content: space-between">
+                            <div style="float: left; flex-grow: 1" class="search-res">
+                                <h3 style="text-align: right; "><a style="color: black; font-size: x-large" href={% url 'signal_detail' ad.id %}>{{ ad.title }}</a>
+                                </h3>
+                                <h6><a style="color: black"
+                                       href={% url 'expert_page' ad.expert.id %}>expert: {{ ad.user_id }}</a></h6>
+                                <h6><a style="color: black"
+                                       href={% url 'symbol_detail' ad.symbol.name %}>symbol: {{ ad.symbol }}</a></h6>
+                                <h6><a href={% url 'signal_detail' ad.id %}>See more</a></h6>
+                            </div>
+                            <p style="float: right; margin: auto 10px; font-size: 25px; font-weight: bold; color: green">{{ ad.expected_return }}</p>
+                            <p style="float: right; margin: auto 10px; font-size: 25px; font-weight: bold; color: red">{{ ad.expected_risk }}</p>
+                        </div>
+                        <p style="float: right; margin: auto 10px; font-size: 15px; font-weight: bold">
+                            {% if ad.start_date %}
+                                {{ ad.start_date }}
+                            {% endif %}
+                            {% if ad.close_date %}
+                                to {{ ad.close_date }}
+                            {% endif %}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <input type="hidden" id="pageNo" value="1">
+
+    {% for ad in ads_chart %}
+        <script type="text/javascript">
+                            $.get('{% url "chart" ad.id %}', function (data) {
+                                                        function is_successful(signal_arr) {
+                            let ind = 0;
+                            let start_value = 0;
+                            let close_value = 0;
+                            while (ind < signal_arr.length) {
+                                if (signal_arr[ind]) {
+                                    start_value = signal_arr[ind];
+                                    break
+                                }
+                                ind += 1;
+                            }
+                            ind = signal_arr.length;
+                            while (ind >= 0) {
+                                if (signal_arr[ind]) {
+                                    close_value = signal_arr[ind];
+                                    break
+                                }
+                                ind -= 1;
+                            }
+                            return close_value > start_value
+                        }
+                        let ctx = $("#myChart-{{forloop.counter}}").get(0).getContext("2d");
+                        let l = data.datasets.length;
+                        data.datasets[0]['borderColor'] = "#349c1a";
+                        data.datasets[0]['pointBackgroundColor'] = "#3dc11a";
+                        data.datasets[0]['pointBorderColor'] = "#3dc11a";
+                        data.datasets[0]['backgroundColor'] = "rgba(61,193,26,0)";
+                        data.datasets[1]['pointBorderColor'] = "#830800";
+                        data.datasets[1]['backgroundColor'] = "rgba(61,193,26,0)";
+<!--                        data.datasets[2]['borderColor'] = "#0076ff";-->
+<!--                        data.datasets[2]['pointRadius'] = 1.5;-->
+<!--                        data.datasets[2]['pointBackgroundColor'] = "#0076ff";-->
+<!--                        data.datasets[2]['pointBorderColor'] = "#0076ff";-->
+<!--                        data.datasets[2]['backgroundColor'] = "rgba(0,50,240,0.4)";-->
+                        var i = 2;
+                        while (i < l-1) {
+                            data.datasets[i]['backgroundColor'] = "rgba(238,240,0,0.34)";
+                            var success_color = "#b2bb00";
+                            if(is_successful(data.datasets[i].data)) {
+                                success_color = "#257a0f";
+                                data.datasets[i]['backgroundColor'] = "rgba(61,193,26,0.41)"; }
+                            else {
+                                success_color = "#830800";
+                                data.datasets[i]['backgroundColor'] = "rgba(202,10,0,0.34)"; }
+                            data.datasets[i]['borderColor'] = success_color;
+                            data.datasets[i]['pointRadius'] = 1.5;
+                            data.datasets[i]['pointBackgroundColor'] = success_color;
+                            data.datasets[i]['pointBorderColor'] = success_color;
+
+                            i += 1;
+                        }
+                        data.datasets[l-1]['borderColor'] = "#434343";
+                        data.datasets[l-1]['pointRadius'] = 1.5;
+                        data.datasets[l-1]['pointBackgroundColor'] = "#434343";
+                        data.datasets[l-1]['pointBorderColor'] = "#434343";
+                        data.datasets[l-1]['backgroundColor'] = "rgba(75,75,75,0.5)";
+                        new Chart(ctx, {
+                            type: 'line',
+                            data: data,
+                            options: {
+                                responsive: true,
+                                scales: {
+                                    xAxes: [{
+                                        type: 'time',
+                                        distribution: 'linear',
+                                        unit: 'day',
+                                        bounds: 'data',
+                                        ticks: {maxRotation: 0}
+                                    }]
+                                },
+                                pan: {
+                                    enabled: true,
+                                    mode: "x",
+                                    speed: 10,
+                                    threshold: 10
+                                },
+                                zoom: {
+                                    enabled: true,
+                                    drag: false,
+                                    mode: "x",
+                                    limits: {
+                                        max: 10,
+                                        min: 0.5
+                                    }
+                                },
+                                legend: {
+                                    display: false
+                                },
+                                title: {
+                                    display: true,
+                                    text: '{{ad.symbol.name}}'
+                                }
+                            },
+                        });
+                    });
+                            {% if forloop.counter > 6 %}
+                        $("#myChart-{{forloop.counter}}").hide();
+                    {% endif %}
+
+                        </script>
+    {% endfor %}
+
+    <script>
+        function rerun(){
+            var pageNo = Number($("#pageNo").val());
+            if (pageNo == 1)
+                $("#prevPage").attr("disabled", "disabled");
+            else
+                $("#prevPage").removeAttr("disabled");
+
+            if (pageNo == Math.ceil({{ ads_chart|length }} / 6))
+                $("#nextPage").attr("disabled", "disabled");
+            else
+                $("#nextPage").removeAttr("disabled");
+
+
+            for (var i=1; i<=300; i++){
+                if (i > pageNo * 6 - 6 && i <= pageNo * 6)
+                    $("#myChart-" + i).show();
+                else
+                    $("#myChart-" + i).hide();
+            }
+        }
+
+        rerun();
+        $('#nextPage').on('click', function () {
+            $("#pageNo").val(Number($("#pageNo").val()) + 1);
+            rerun();
+        });
+        $('#prevPage').on('click', function () {
+            $("#pageNo").val(Number($("#pageNo").val()) - 1);
+            rerun();
+        });
+    </script>
+{% endblock %}

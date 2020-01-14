@@ -1,6 +1,4 @@
 import six
-from django.core.exceptions import ValidationError
-from django.core.validators import validate_email
 
 PERSIAN_TEXT_MAPPING = {
     '۰': '0',
@@ -15,11 +13,13 @@ PERSIAN_TEXT_MAPPING = {
     '۹': '9',
 }
 
+
 def normalize_persian_characters(text):
     normalized_text = ''
     for pos in range(len(text)):
         normalized_text += PERSIAN_TEXT_MAPPING.get(text[pos], text[pos])
     return normalized_text
+
 
 def phone_validator(phone):
     if not string_check(phone, min_length=11, max_length=11)[0]:
@@ -28,6 +28,7 @@ def phone_validator(phone):
     if not phone.startswith('09'):
         return False, 'Not a valid Iran mobile number'
     return True, phone
+
 
 def string_check(text, verbose_name='ورودی', min_length=None, max_length=None, alphanumeric=False):
     if not isinstance(text, six.string_types):

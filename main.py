@@ -1,10 +1,5 @@
 import csv
-import os
-import numpy as np
 from datetime import datetime
-from random import randint
-
-from matplotlib import pyplot as plt
 
 
 def date(s):
