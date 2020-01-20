@@ -32,6 +32,10 @@ class Signal(models.Model):
     def user_id(self):
         return self.expert.display_name
 
+    def save(self, **kwargs):
+        super().save(**kwargs)
+        if self.is_succeeded is None:
+            pass
 
 class Member(models.Model):
     first_name = models.CharField(max_length=30)

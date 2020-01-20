@@ -9,8 +9,7 @@ from chartjs.views.lines import BaseLineChartView
 
 from advertisement.models import Signal, Member, Expert, Symbol, ResetPassword
 from advertisement.utils import send_email_async
-from database import symbols
-from main import stock_data
+from bourse_refs.models import Stock, StockHistory
 from .forms import SearchForm, AddSignalForm, LoginForm, ResetPassForm, RegisterForm, AddExpertForm, SubmitPassword, \
     ApplyAlgorithmForm
 from django.contrib.auth import authenticate, login, logout
@@ -169,8 +168,8 @@ class LineChartJsonView(BaseLineChartView):
         self.other_signals = None
 
     def get_labels(self):
-        arr = stock_data[symbols[Signal.objects.get(id=self.kwargs['ad']).symbol.name]]
-        return [x[0] for x in arr]
+        arr = StockHistory.objects.filter(stock__name=Signal.objects.get(id=self.kwargs['ad']).symbol.name).values_list('date', flat=True)
+        return [str(x) for x in arr]
 
     def get_providers(self):
         providers = ['Other Signals'] * len(self.other_signals)
@@ -185,26 +184,26 @@ class LineChartJsonView(BaseLineChartView):
         other_signals = Signal.objects.filter(expert=sig.expert, symbol=sig.symbol).exclude(
             id=self.kwargs['ad']).order_by('start_date').values_list('start_date', 'close_date')
         self.other_signals = other_signals
-        price_arr = stock_data[symbols[sig.symbol.name]]
+        price_arr = StockHistory.objects.filter(stock__name=sig.symbol.name).values_list('date', 'last_price')
         signal_arr = [None for _ in price_arr]
         other_signals_arr = [[None for _ in price_arr] for i in range(len(other_signals))]
         buy_arr = [None for _ in price_arr]
         sell_arr = [None for _ in price_arr]
 
         for i, x in enumerate(price_arr):
-            if sig.start_date <= x[0].date() <= sig.close_date:
+            if sig.start_date <= x[0] <= sig.close_date:
                 signal_arr[i] = x[1]
-                if x[0].date() == sig.start_date or i == 0 or price_arr[i - 1][0].date() < sig.start_date:
+                if x[0] == sig.start_date or i == 0 or price_arr[i - 1][0] < sig.start_date:
                     buy_arr[i] = x[1]
-                if x[0].date() == sig.close_date or i == len(price_arr) - 1 or price_arr[i + 1][
-                    0].date() > sig.close_date:
+                if x[0] == sig.close_date or i == len(price_arr) - 1 or price_arr[i + 1][
+                    0] > sig.close_date:
                     sell_arr[i] = x[1]
             for j, (start, close) in enumerate(other_signals):
-                if start <= x[0].date() <= close:
+                if start <= x[0] <= close:
                     other_signals_arr[j][i] = x[1]
-                    if x[0].date() == start or i == 0 or price_arr[i - 1][0].date() < start:
+                    if x[0] == start or i == 0 or price_arr[i - 1][0] < start:
                         buy_arr[i] = x[1]
-                    if x[0].date() == close or i == len(price_arr) - 1 or price_arr[i + 1][0].date() > close:
+                    if x[0] == close or i == len(price_arr) - 1 or price_arr[i + 1][0] > close:
                         sell_arr[i] = x[1]
         res = [x for x in other_signals_arr]
         res.insert(0, signal_arr)
@@ -216,15 +215,14 @@ class LineChartJsonView(BaseLineChartView):
 
 class SymbolChartJsonView(BaseLineChartView):
     def get_labels(self):
-        arr = stock_data[symbols[self.kwargs['symbol']]]
-        return [x[0] for x in arr]
+        arr = StockHistory.objects.filter(stock__name=self.kwargs['symbol']).values_list('date', flat=True)
+        return [str(x) for x in arr]
 
     def get_providers(self):
         return ['Price']
 
     def get_data(self):
-        arr = stock_data[symbols[self.kwargs['symbol']]]
-        return [[x[1] for x in arr]]
+        return [list(StockHistory.objects.filter(stock__name=self.kwargs['symbol']).values_list('last_price', flat=True))]
 
 
 def signal_detail(request, signal_id):

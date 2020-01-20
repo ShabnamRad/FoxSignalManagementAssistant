@@ -40,6 +40,9 @@ class StockHistory(models.Model):
     num_stocks = models.BigIntegerField(null=True, blank=True)
     base_volume = models.IntegerField(null=True, blank=True)
 
+    class Meta:
+        ordering = ['date']
+
 
 class StockOwnership(models.Model):
     stock = models.ForeignKey(Stock, on_delete=models.PROTECT)
