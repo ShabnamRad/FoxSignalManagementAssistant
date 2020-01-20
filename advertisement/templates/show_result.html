@@ -1,0 +1,31 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+
+{% block title %}
+Adding Signal
+{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'bootstrap-4.0.0.min.css' %}">
+    <link rel="stylesheet" href="{% static 'style.css' %}?v=1">
+    <link rel="icon" href="{% static 'favicon.ico' %}">
+{% endblock %}
+
+{% block content %}
+<div class="grid">
+    <div class="row"></div>
+    <div class="row">
+        <div class="col-xs-10 col-md-8 col-lg-8 col-sm-8 offset-xs-1 offset-md-2 offset-lg-2 offset-sm-2 the-box">
+            <div class="well bs-component">
+                <h3>You have successfully added your signal. We ran our algorithm on {{ signal.expert.display_name }} <br>
+                and if you had acted according to our algorithm (from the beginning), you would end up with <br>
+                </h3><h1>{{score}}%</h1> <br> <h3>profit!
+                <br>
+                This marvelous algorithm of ours suggests you </h3>
+                <h1>{% if signal.should_buy %} BUY {% else %} NOT BUY {% endif %} </h1> <br> <h3> this signal!</h3>
+            </div>
+            <a href="{% url 'search' %}"><button>continue</button></a>
+        </div>
+    </div>
+</div>
+{% endblock %}

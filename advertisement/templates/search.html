@@ -49,6 +49,9 @@
                                        href={% url 'expert_page' ad.expert.id %}>expert: {{ ad.user_id }}</a></h6>
                                 <h6><a style="color: black"
                                        href={% url 'symbol_detail' ad.symbol.name %}>symbol: {{ ad.symbol }}</a></h6>
+                                {% if signal.use_learning %}
+                                <h6>Our suggestion: <strong> {% if not signal.should_buy %} NOT {% endif %} BUY</strong></h6>
+                                {% endif %}
                                 <h6><a style="color: #6e6e6e" href={% url 'signal_detail' ad.id %}>See more</a>
                                 </h6>
                             </div>

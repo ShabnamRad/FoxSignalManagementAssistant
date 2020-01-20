@@ -20,7 +20,7 @@ class ApplyAlgorithmForm(forms.Form):
 class AddSignalForm(ModelForm):
     class Meta:
         model = Signal
-        exclude = ['signaler']
+        exclude = ['signaler', 'should_buy']
 
     def __init__(self, *args, **kwargs):
         super(AddSignalForm, self).__init__(*args, **kwargs)

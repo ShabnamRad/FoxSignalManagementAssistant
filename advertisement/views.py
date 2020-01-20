@@ -19,7 +19,7 @@ def search(request):
     if request.method == 'GET':
         form = SearchForm()
         ads = Signal.objects.all().order_by('-expert__raw_score')[:200]
-        return render(request, '../templates/search.html', {
+        return render(request, 'search.html', {
             'ads': ads,
             'form': form
         })
@@ -30,32 +30,34 @@ def search(request):
             ads = Signal.objects.filter(
                 Q(title__contains=title) | Q(symbol__name__contains=title) | Q(expert__display_name__contains=title))[
                   :100]
-            return render(request, '../templates/search.html', {
+            return render(request, 'search.html', {
                 'ads': ads,
                 'form': form
             })
         else:
-            return render(request, '../templates/search.html', {'form': form})
+            return render(request, 'search.html', {'form': form})
 
 
 def add_signal(request):
     if request.method == 'GET':
         form = AddSignalForm()
-        return render(request, '../templates/add_signal.html', {'form': form})
+        return render(request, 'add_signal.html', {'form': form})
     else:
         form = AddSignalForm(request.POST, request.FILES)
         form.user = request.user
         if form.is_valid():
-            form.save()
+            signal = form.save()
+            if form.cleaned_data['is_succeeded'] is None:
+                return render(request, 'show_result.html', {'signal': signal, 'score': (Signal.score - 1) * 100})
             return redirect('search')
         else:
-            return render(request, '../templates/add_signal.html', {'form': form})
+            return render(request, 'add_signal.html', {'form': form})
 
 
 def add_expert(request):
     if request.method == 'GET':
         form = AddExpertForm()
-        return render(request, '../templates/add_expert.html', {'form': form})
+        return render(request, 'add_expert.html', {'form': form})
     else:
         form = AddExpertForm(request.POST, request.FILES)
         form.user = request.user
@@ -63,36 +65,36 @@ def add_expert(request):
             form.save()
             return redirect('profile')
         else:
-            return render(request, '../templates/add_expert.html', {'form': form})
+            return render(request, 'add_expert.html', {'form': form})
 
 
 def symbols_list(request):
     if request.method == 'GET':
         symbols = Symbol.objects.all()
-        return render(request, '../templates/symbols.html', {
+        return render(request, 'symbols.html', {
             'symbols': symbols
         })
 
 
 def profile(request):
     ads = Signal.objects.filter(expert__in=request.user.member.followings.all())[:100]
-    return render(request, '../templates/profile.html', {
+    return render(request, 'profile.html', {
         'ads': ads
     })
 
 
 def dashboard(request):
-    return render(request, '../templates/dashboard.html')
+    return render(request, 'dashboard.html')
 
 
 def home(request):
-    return render(request, '../templates/home.html')
+    return render(request, 'home.html')
 
 
 def login_view(request):
     if request.method == 'GET':
         form = LoginForm()
-        return render(request, '../templates/login.html', {'form': form})
+        return render(request, 'login.html', {'form': form})
     else:
         form = LoginForm(request.POST)
         user = authenticate(request, username=form['username'].value(), password=form['password'].value())
@@ -100,7 +102,7 @@ def login_view(request):
             login(request, user)
             return redirect('profile')
         else:
-            return render(request, '../templates/login.html', {'form': form})
+            return render(request, 'login.html', {'form': form})
 
 
 def logout_view(request):
@@ -111,20 +113,20 @@ def logout_view(request):
 def register(request):
     if request.method == 'GET':
         form = RegisterForm()
-        return render(request, '../templates/register.html', {'form': form})
+        return render(request, 'register.html', {'form': form})
     else:
         form = RegisterForm(request.POST)
         if form.is_valid():
             form.save()
             return redirect('profile')
         else:
-            return render(request, '../templates/register.html', {'form': form})
+            return render(request, 'register.html', {'form': form})
 
 
 def reset_password(request):
     if request.method == 'GET':
         form = ResetPassForm()
-        return render(request, '../templates/forget_password.html', {'form': form})
+        return render(request, 'forget_password.html', {'form': form})
     else:
         form = ResetPassForm(request.POST, request.FILES)
         try:
@@ -140,7 +142,7 @@ def reset_password(request):
             send_email_async(email)
             return redirect('home')
         except Member.DoesNotExist:
-            return render(request, '../templates/forget_password.html', {
+            return render(request, 'forget_password.html', {
                 'form': form,
                 'error': 'No user with this email address'
             })
@@ -149,7 +151,7 @@ def reset_password(request):
 def change_password(request):
     if request.method == 'GET':
         form = SubmitPassword()
-        return render(request, '../templates/change_password.html', {'form': form})
+        return render(request, 'change_password.html', {'form': form})
     else:
         form = SubmitPassword(request.POST)
         token = request.GET.get('token')
@@ -159,7 +161,7 @@ def change_password(request):
             new_password.advertiser.user.save()
             return redirect('home')
         else:
-            return render(request, '../templates/change_password.html', {'form': form})
+            return render(request, 'change_password.html', {'form': form})
 
 
 class LineChartJsonView(BaseLineChartView):
@@ -228,7 +230,7 @@ class SymbolChartJsonView(BaseLineChartView):
 def signal_detail(request, signal_id):
     try:
         advertisement = Signal.objects.get(pk=signal_id)
-        return render(request, '../templates/signal_detail.html', {
+        return render(request, 'signal_detail.html', {
             'advertisement': advertisement
         })
     except Signal.DoesNotExist:
@@ -239,7 +241,7 @@ def symbol_detail(request, symbol_name):
     try:
         symbol_obj = Symbol.objects.get(name=symbol_name)
         ads = Signal.objects.filter(symbol=symbol_obj).order_by('-start_date')
-        return render(request, '../templates/symbol_detail.html', {
+        return render(request, 'symbol_detail.html', {
             'symbol': symbol_obj,
             'ads': ads
         })
@@ -258,7 +260,7 @@ def expert_page(request, expert_id):
     ads_chart = [Signal.objects.filter(expert=expert, symbol__name=sname).latest('id') for sname in symbols]
 
     securities = set(ads.values_list('symbol__id', 'symbol__name'))
-    return render(request, '../templates/expert_page.html', {
+    return render(request, 'expert_page.html', {
         'expert': expert,
         'ads_chart': ads_chart,
         'ads': ads,
@@ -284,7 +286,7 @@ def expert_aggregate(request):
     if request.method == 'GET':
         ads = Signal.objects.all().order_by('-expert__raw_score')[:200]
         form = ApplyAlgorithmForm
-        return render(request, '../templates/expert_aggregation.html', {
+        return render(request, 'expert_aggregation.html', {
             'ads': ads,
             'form': form,
             'experts': experts,
@@ -426,7 +428,7 @@ def expert_aggregate(request):
         for e, weight in weights.items():
             weights[e] = weight/sum_of_weights
 
-        return render(request, '../templates/expert_aggregation.html', {
+        return render(request, 'expert_aggregation.html', {
             'ads': ads,
             'experts': experts,
             'weights': weights,
