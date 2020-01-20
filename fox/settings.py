@@ -89,7 +89,7 @@ DATABASES = {
         'NAME': 'bourse_main',
         'USER': 'datascientist',
         'PASSWORD': 'XK=XYM:FYT',
-        'HOST': '192.168.204.28',
+        'HOST': '213.233.177.166',
         'PORT': '5432',
     }
 }
