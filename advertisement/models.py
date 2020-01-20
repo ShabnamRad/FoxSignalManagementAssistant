@@ -19,11 +19,11 @@ def get_image_path(instance, filename):
 class Signal(models.Model):
     title = models.CharField(max_length=80)
     is_succeeded = models.BooleanField(default=None, blank=True, null=True)
-    profit = models.FloatField(default=None, blank=True, null=True)
+    profit = models.FloatField(default=None, blank=True, null=True, help_text='Percentage')
     start_date = models.DateField(default=None, blank=True, null=True)
     close_date = models.DateField(default=None, blank=True, null=True)
-    expected_return = models.FloatField(default=None, blank=True, null=True)
-    expected_risk = models.FloatField(default=None, blank=True, null=True)
+    expected_return = models.FloatField(default=None, blank=True, null=True, help_text='Percentage')
+    expected_risk = models.FloatField(default=None, blank=True, null=True, help_text='Percentage')
 
     symbol = models.ForeignKey('Symbol', on_delete=models.CASCADE)
     expert = models.ForeignKey('Expert', on_delete=models.CASCADE, null=True, default="", blank=True)
@@ -33,7 +33,7 @@ class Signal(models.Model):
     ACTIONS = ["buy", "not"]
 
     class Meta:
-        ordering = ['start_date', 'close_date']
+        ordering = ['-start_date', '-close_date']
 
     def __str__(self):
         return self.title + ' ' + self.symbol.name
@@ -41,10 +41,6 @@ class Signal(models.Model):
     @property
     def user_id(self):
         return self.expert.display_name
-
-    @property
-    def use_learning(self):
-        return self.is_succeeded is None
 
     @staticmethod
     def get_price(sym, date):
@@ -88,17 +84,17 @@ class Signal(models.Model):
         new_stage = last_stage
         if action == "buy":
             if sample[stage].start_date > day:
-                rew = 1 + sample[stage].profit
-                profit = sample[last_stage].profit
+                rew = 1 + sample[stage].profit / 100
+                profit = sample[last_stage].profit / 100
             else:
                 start_price = self.get_price(sample[last_stage].symbol, sample[last_stage].start_date)
                 end_price = self.get_price(sample[last_stage].symbol, sample[stage].start_date)
-                if end_price / start_price >= sample[last_stage].profit:
+                if end_price / start_price >= sample[last_stage].profit / 100:
                     rew = 3
                 elif sample[stage].start_date <= sample[last_stage].start_date + timedelta(days=10):
                     rew = 0
                 else:
-                    rew = 1 + sample[stage].profit - sample[last_stage].profit
+                    rew = 1 + sample[stage].profit / 100 - sample[last_stage].profit / 100
                 profit = end_price / start_price
             s_prim = s[0][end - look_back_window + 1:] + ('T' if sample[stage].is_succeeded else 'F'), (
                 int(sample[stage + 1].expected_return / 10) * 10 if stage < len(sample) - 1 else 0), round(
@@ -120,7 +116,7 @@ class Signal(models.Model):
         act_percentage = 0.3
         epsilon = 1
 
-        sample = list(Signal.objects.filter(expert=self.expert, is_succeeded__isnull=False)) + [self]
+        sample = list(Signal.objects.filter(expert=self.expert, is_succeeded__isnull=False).order_by('start_date', 'close_date')) + [self]
         start_state = "T" * look_back_window, int(sample[0].expected_return/10)*10, 1
         Q = {(start_state, "buy"): 1, (start_state, "not"): 1}
 
@@ -173,7 +169,6 @@ class Signal(models.Model):
             #     continue
             if not Stock.objects.filter(name=sample[stage].symbol.name).exists():
                 continue
-
             a = self.get_policy(start_state, sample, stage, day, Q)
             if a == 'buy':
                 if stage == len(sample) - 1:
@@ -186,15 +181,16 @@ class Signal(models.Model):
                     else:
                         # print("SELL")
                         end_price = self.get_price(sample[last_stage].symbol, sample[stage].start_date)
-                    score *= (end_price / start_price) * 0.985
+                    if stage < len(sample) - 1:
+                        score *= (end_price / start_price) * 0.985
                 last_stage = stage
             end_state, _, day, last_stage = self.step(start_state, a, stage, day, last_stage, sample, look_back_window, Q)
             start_state = end_state
 
         if answer == 'buy':
             self.should_buy = True
-        if last_stage != -1:
-            score *= (1 + sample[last_stage].profit) * 0.985
+        if last_stage != -1 and last_stage != len(sample) - 1:
+            score *= (1 + sample[last_stage].profit / 100) * 0.985
         Signal.score = score
 
     def save(self, **kwargs):
