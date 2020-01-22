@@ -216,8 +216,6 @@ class Member(models.Model):
 
 class Expert(models.Model):
     display_name = models.CharField(max_length=30)
-    first_name = models.CharField(max_length=80)
-    last_name = models.CharField(max_length=80)
     website = models.URLField(max_length=200, null=True)
     raw_score = models.FloatField(default=1)
 

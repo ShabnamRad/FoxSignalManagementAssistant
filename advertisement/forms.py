@@ -63,12 +63,8 @@ class AddExpertForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(AddExpertForm, self).__init__(*args, **kwargs)
         self.fields['display_name'].widget.attrs['placeholder'] = 'display_name'
-        self.fields['first_name'].widget.attrs['placeholder'] = 'first_name'
-        self.fields['last_name'].widget.attrs['placeholder'] = 'last_name'
         self.fields['website'].widget.attrs['placeholder'] = 'website'
         self.fields['display_name'].widget.attrs['class'] = 'form-control '
-        self.fields['first_name'].widget.attrs['class'] = 'form-control '
-        self.fields['last_name'].widget.attrs['class'] = 'form-control '
         self.fields['website'].widget.attrs['class'] = 'form-control '
 
     def clean(self):

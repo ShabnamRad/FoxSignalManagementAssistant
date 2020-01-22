@@ -23,6 +23,10 @@ class Stock(models.Model):
     def detail_url(self):
         return 'http://www.tsetmc.com/Loader.aspx?ParTree=15131J&i={}'.format(self.id)
 
+    @classmethod
+    def get_stock(cls, name):
+        return Stock.objects.get(name=name)
+
 
 class StockHistory(models.Model):
     stock = models.ForeignKey(Stock, on_delete=models.PROTECT)
