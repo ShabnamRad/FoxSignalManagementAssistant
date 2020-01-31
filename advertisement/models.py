@@ -84,17 +84,26 @@ class Signal(models.Model):
         new_stage = last_stage
         if action == "buy":
             if sample[stage].start_date > day:
-                rew = 1 + sample[stage].profit / 100
-                profit = sample[last_stage].profit / 100
+                if stage != len(sample) - 1:
+                    rew = 1 + sample[stage].profit / 100
+                else:
+                    rew = 1
+                if last_stage > -1 and last_stage != len(sample) -1:
+                    profit = 1 + sample[last_stage].profit / 100
+                else:
+                    profit = 1
             else:
                 start_price = self.get_price(sample[last_stage].symbol, sample[last_stage].start_date)
                 end_price = self.get_price(sample[last_stage].symbol, sample[stage].start_date)
-                if end_price / start_price >= sample[last_stage].profit / 100:
+                if end_price / start_price >= 1 + sample[last_stage].profit / 100:
                     rew = 3
                 elif sample[stage].start_date <= sample[last_stage].start_date + timedelta(days=10):
                     rew = 0
                 else:
-                    rew = 1 + sample[stage].profit / 100 - sample[last_stage].profit / 100
+                    if stage != len(sample) - 1:
+                        rew = 1 + sample[stage].profit / 100 - sample[last_stage].profit / 100
+                    else:
+                        rew = 1
                 profit = end_price / start_price
             s_prim = s[0][end - look_back_window + 1:] + ('T' if sample[stage].is_succeeded else 'F'), (
                 int(sample[stage + 1].expected_return / 10) * 10 if stage < len(sample) - 1 else 0), round(
